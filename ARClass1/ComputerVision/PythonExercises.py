@@ -64,4 +64,33 @@ def ex10():
     arr[1:-1, 1:-1] = 0
     print (arr)
 
-ex10()
+# Ex 11
+def ex11():
+    arr = np.ones((5, 5))
+    arr += np.arange(5)
+    print(arr)
+
+# Ex 12
+def ex12():
+    arr = np.float64(np.random.randint(0, 10, 9))
+    arr = arr.reshape((3, 3))
+    arr -= np.mean(arr)
+
+# The next exercises are not done because they are very similar
+
+# Ex 15
+def ex15():
+    a = np.random.uniform(1.0, 1.0, 25)
+    a = a.reshape((5, 5))
+    index = np.absolute(a - 0.5).argmin()
+    a = a.flatten()
+    print(a[index])
+
+def ex16():
+    a = np.random.randint(0, 10, 9)
+    a = a.reshape((3, 3))
+    result = a[a > 5]
+    print(result)
+    print(len(result))
+
+ex16()
