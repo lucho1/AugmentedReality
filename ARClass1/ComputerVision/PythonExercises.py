@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 # This are the numpy exrcises in the campus
 # Ex1
@@ -93,4 +94,30 @@ def ex16():
     print(result)
     print(len(result))
 
-ex16()
+def ex17():
+    img = np.tile(np.linspace(0, 255, 64), (64, 1))
+    cv2.imshow("image", np.uint8(img))
+    cv2.waitKey(0)
+
+def ex17_2ndV():
+    img = np.zeros((64, 64))
+    grad = np.arange(0.0, 1.0, 1.0/64.0)
+    img += grad
+    cv2.imshow("image", img)
+    cv2.waitKey(0)
+
+def ex19():
+    img = 255 * np.ones((64, 64, 3), np.uint8)
+    img[:, :, 0] = 0.0
+    cv2.imshow("image", img)
+    cv2.waitKey(0)
+
+# Same than before, exercise won't be performed due to their similarity
+
+def ex22():
+    img = cv2.imread("images/sonic.jpg", cv2.IMREAD_ANYCOLOR)
+    img[:, :100:2] = 0.0
+    cv2.imshow("image", img)
+    cv2.waitKey(0)
+
+ex22()
