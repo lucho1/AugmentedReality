@@ -31,13 +31,13 @@ def boxFilter(img, KernelSize):
 path = "images/lena_noise.jpg"
 img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
 img2 = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-boxFilter(img, 10)
+boxFilter(img, 21)
 
 # ---------------------------------------------------------------
 #Display image
 winName = 'Img Without Noise'
 cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-cv2.imshow(winName, boxFilter(img, 21))
+cv2.imshow(winName, boxFilter(img, 10))
 
 winName = 'Img With Noise'
 cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
