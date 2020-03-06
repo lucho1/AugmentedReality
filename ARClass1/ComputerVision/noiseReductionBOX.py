@@ -1,8 +1,11 @@
+# ---------------------------------------------------------------
 #Modules
 import cv2
 import numpy as np
 font = cv2.QT_FONT_NORMAL
 
+# ---------------------------------------------------------------
+#Functions
 def FilterImage(ksize, image, krad, krn):
 
     height, width, depth = image.shape
@@ -35,8 +38,8 @@ def gaussianKernel(krad):
     sig = krad/3
 
     #Fill kernel with gaussian values
-    for i in range(0, krad):
-        for j in range(0, krad):
+    for i in range(0, ksize):
+        for j in range(0, ksize):
             d = np.sqrt((krad - i)**2 + (krad - j)**2)  # Compute d
             krn[i, j] = np.exp(-(d**2/(2.0*sig**2)))    # Compute G(d)
     
