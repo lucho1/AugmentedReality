@@ -120,4 +120,6 @@ def ex22():
     cv2.imshow("image", img)
     cv2.waitKey(0)
 
-#ex22()
+
+
+ex22()
