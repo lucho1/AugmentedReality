@@ -55,34 +55,34 @@ def gaussianFilter(image, kernelSize):
 #Load image
 path = "images/lena_noise.jpg"
 path2 = "images/sonic.jpg"
-img = cv2.imread(path, cv2.IMREAD_COLOR)
-img2 = cv2.imread(path, cv2.IMREAD_COLOR)
-img3 = cv2.imread(path2, cv2.IMREAD_COLOR)
+#img = cv2.imread(path, cv2.IMREAD_COLOR)
+#img2 = cv2.imread(path, cv2.IMREAD_COLOR)
+#img3 = cv2.imread(path2, cv2.IMREAD_COLOR)
 
 #Process Images
-img = img / 255.0
-filtered = gaussianFilter(img, 9)
+#img = img / 255.0
+#filtered = gaussianFilter(img, 9)
 
 #img3 = img3 / 255.0
 #filtered3 = gaussianFilter(img3, 15)
-edges3 = cv2.Canny(filtered3, 200, 125)
+#edges3 = cv2.Canny(filtered3, 200, 125)
 
 # ---------------------------------------------------------------
 #Display image
 winName = 'Filtered'
-cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-cv2.imshow(winName, filtered)
+#cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#cv2.imshow(winName, filtered)
 
 winName = 'Original'
-cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-cv2.imshow(winName, img2)
+#cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#cv2.imshow(winName, img2)
 
 winName = 'Filtered Sonic'
-cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-cv2.imshow(winName, filtered3)
+#cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#cv2.imshow(winName, filtered3)
 
 winName = 'Edge Detction'
-cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
 #cv2.imshow(winName, edges3)
 
 # ---------------------------------------------------------------
