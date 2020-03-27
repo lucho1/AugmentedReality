@@ -27,13 +27,29 @@ print(msg3)
 
 # ---------------------------------------------------------------
 #Functions
+def FilterImage(target_image, main_image):
 
+    #height, width, depth = image.shape
+    ret = np.zeros(main_image.shape)
+    main_height, main_width, _ = main_image.shape
+    target_height, target_width, _ = target_image.shape
 
+    for i in range(0, main_height):
+        for j in range(0, main_width):
+            for k in range(0, target_height):
+                for w in range(0, target_width):
+                    if(i < 48 and j < 48 and k < 48 and w < 48 and (j+w) < 48 and (k+i) < 48):
+                        ret[i][j] = np.sqrt(target_image[w][k] - main_image[j+w][k+i])
+
+    return ret
 
 # ---------------------------------------------------------------
 #Load Images
 input_img = cv2.imread(input_imgPath, cv2.IMREAD_COLOR)
 target_img = cv2.imread(target_imgPath, cv2.IMREAD_COLOR)
+
+#Create Matching Map Image
+matchingmap_img = FilterImage(target_img, input_img)
 
 #Setup Stuff for Text Window
 result_img = np.zeros((40, 320, 4), np.uint8)   #Black Image
@@ -59,6 +75,7 @@ cv2.imshow(winName, target_img)
 
 winName = 'Matching Map Image'
 cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+cv2.imshow(winName, matchingmap_img)
 
 winName = 'Result Mesage'
 cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
