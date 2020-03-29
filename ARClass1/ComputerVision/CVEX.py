@@ -46,13 +46,15 @@ match = False
 
 # ---------------------------------------------------------------
 #Inputs
-#input_imgPath = input("Introduce Path for Input Image: ")           #ex_img/img1.png
-target_imgPath = input("Introduce Path for Target Image: ")         #ex_img/t1-img1.png
-#detection_threshold = input("Introduce Detection Threshold: ")       #0.1
+#NOTE FOR JESUS: We have tried to do this through inputs but it give
+#error of "libpng warning: bKGD: invalid", so we hardcoded it
+input_imgPath = str(input("Introduce Path for Input Image: "))          #ex_img/img1.png
+target_imgPath = str(input("Introduce Path for Target Image: "))        #ex_img/t1-img1.png
+detection_threshold = float(input("Introduce Detection Threshold: "))   #0.1
 
-input_imgPath = "ex_img/img1.png"
+#input_imgPath = "ex_img/img1.png"
 #target_imgPath = "ex_img/t1-img1.png"
-detection_threshold = 0.1
+#detection_threshold = 0.1
 
 msg1 = "Input Image Introduced: {0}".format(input_imgPath)
 msg2 = "Target Image Introduced: {0}".format(target_imgPath)
@@ -75,7 +77,7 @@ matchingmap_img = GenerateMatchingMapImage(target_gray_img, input_gray_img)
 matchingmap_img /= 255 #Normalize!!!! (Otherwise matchMap img is seen very weird)
 
 #See if there is any detection (according to threshold)
-#match = matchingmap_img.min()/matchingmap_img.max() < detection_threshold
+match = matchingmap_img.min()/matchingmap_img.max() < detection_threshold
 
 # ---------------------------------------------------------------
 #Setup Text Window
