@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------
+#Modules
+import cv2
+import numpy as np
+default_font = cv2.QT_FONT_NORMAL
+
+input_imgPath = "images/bcn_exercise1_image.png"
+
+# ---------------------------------------------------------------
+#Functions
+def convolvegrayscale(img, krn, ksize, krad):
+
+    height, width = img.shape
+    
+    frm = np.ones((height + krad*2,                   
+     width + krad*2))
+    frm[krad: -krad, krad: -krad] = img
+
+    #filteted image(output)
+    filter = np.zeros(img.shape)
+    for i in range (0, height):
+        for j in range (0,width):
+
+            g = (frm[i:i+ksize, j:j+ksize] * krn).sum()
+            filter[i,j] = g
+
+            #filter[i,j] = (frm[i:i+ksize, j:j+ksize]*krn[:,:,np.newaxis]).sum(axis=(0,1))
+
+
+    return filter
+
+def sobelFilter(img):
+
+    # Kernel definition
+    ksize = 3      # kernel size
+    krad = int(ksize/2) #kernel radius 
+    krn = np.zeros((ksize,ksize))
+    list = [[-1,0,1],[-2,0,2],[-1,0,1]]
+    krn = np.array(list)
+    krn2 = np.transpose(krn)
+    print(krn)
+    print(krn2)
+
+    # Create the gradient in x and in y
+    img_x = convolvegrayscale(img, krn, ksize, krad)
+    img_y = convolvegrayscale(img, krn2, ksize, krad)
+
+    # Use both 
+    G = np.sqrt(img_x**2 + img_y**2)
+
+    return G
+
+# ---------------------------------------------------------------
+#Load Images
+input_img = cv2.imread(input_imgPath, cv2.IMREAD_COLOR)
+input_img /= 255
+
+# ---------------------------------------------------------------
+# Process
+#filtered = sobelFilter(input_img)
+#filtered = filtered/filtered.max()
+
+# ---------------------------------------------------------------
+#Display Images
+winName = 'Input Image'
+cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+cv2.imshow(winName, input_img)
+
+#winName = 'Result Image'
+#cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+#cv2.imshow(winName, filtered)
+
+# ---------------------------------------------------------------
+#Keep the Screen Showing until a key is pressed
+cv2.waitKey(0)
+cv2.destroyAllWindows()
