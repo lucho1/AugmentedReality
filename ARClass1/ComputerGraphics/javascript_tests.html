@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <!-- metadata, things not "visible" -->
+
+        <!-- Scripts can be written inside functions -->
+        <script language="javascript" type="text/javascript"> 
+            function printHola()
+            {
+                document.write("Hola");
+            }
+
+            function CreateEntity()
+            {
+                //You can create entities:
+                var entity = {};
+
+                //You have to create them like this,
+                //in the very place, by aggregation
+                //creating the struct you want
+                entity.active = true;
+                entity.transform = {};
+                entity.transform.x = 0;
+                entity.transform.y = 0;
+                entity.transform.z = 0;
+                
+                //No pointers in javascript :(
+                //But you can access through maps:                
+                var texture = {};
+                texture.width = 100;
+                texture.height = 100;
+
+                document.write("<h1>");
+                document.write(texture.width);
+                document.write("</h1>");
+
+                //Maps, modifying texture width original value:
+                texture["width"] = 150;
+                document.write("<h1>");
+                document.write(texture.width);
+                document.write("</h1>");
+            }
+        </script>
+
+    </head>
+
+    <!-- onload is an event fired when body is loaded, and can do things (calling functions, ...) -->
+    <!-- <body onload="printHola()"> -->
+    <body>
+        <h1>Title</h1>
+        <h2>Title 2</h2>
+        <p>Paragraph Text</p>
+
+        <!-- Line to say "start writing in Javascript" -->
+        <script language="javascript" type="text/javascript"> 
+
+            //Document is a global varaible containing html document
+            document.write("Hola...");
+
+            printHola();
+            CreateEntity();
+            var value = 4;
+        </script>
+    </body>
+</html>
+
+<!-- To Debug in navigator: F12 to open inspector, and
+check the console to see errors -->
+
+<!-- Click GoLive (abajo izquierda) to open navigator
+with this code-->
