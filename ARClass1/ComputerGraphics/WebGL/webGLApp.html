@@ -11,21 +11,23 @@
         <script id="shader-vs" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
 
-            uniform mat4 uMVMatrix;
-            uniform mat4 uPMatrix;
+            uniform mat4 u_ModelViewMatrix;
+            uniform mat4 u_ProjMatrix;
 
             void main(void)
             {
-                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = u_ProjMatrix * u_ModelViewMatrix * vec4(aVertexPosition, 1.0);
             }
         </script>
         
         <script id="shader-fs" type="x-shader/x-fragment">
             precision mediump float;
+            
+            uniform vec4 u_Color;
 
             void main(void)
             {
-                gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                gl_FragColor = u_Color;
             }
         </script>
         
@@ -111,14 +113,15 @@
                 shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
                 gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-                shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-                shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+                shaderProgram.ProjUniform = gl.getUniformLocation(shaderProgram, "u_ProjMatrix");
+                shaderProgram.ModelViewUniform = gl.getUniformLocation(shaderProgram, "u_ModelViewMatrix");
+                shaderProgram.ColorUniform = gl.getUniformLocation(shaderProgram, "u_Color");
             }
 
             // Load Scene (basically, loads the triangle with its buffer)
-            function loadSceneOnGPU()
+            function LoadTriangle()
             {
-                triangleVertexPositionBuffer = gl.createBuffer();
+                var triangleVertexPositionBuffer = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
 
                 var vertices = [
@@ -130,10 +133,12 @@
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
                 triangleVertexPositionBuffer.itemSize = 3;
                 triangleVertexPositionBuffer.numItems = 3;
+
+                return triangleVertexPositionBuffer;
             }
 
             //Draw the Scene
-            function drawScene()
+            function drawScene(t1, t2)
             {
                 gl.enable(gl.DEPTH_TEST);
                 gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -141,20 +146,28 @@
                 gl.clearColor(0.0, 0.0, 0.0, 1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
                 
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-                
                 var pMatrix = mat4.create();
-                mat4.perspective(45, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
-
                 var mvMatrix = mat4.create();
+                mat4.perspective(45, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+                
+                mat4.identity(mvMatrix);                
+                drawTriangle(t1, pMatrix, mvMatrix, [0.0, 0.0, -10.0], [0.0, 1.0, 0.0, 1.0]);
+
                 mat4.identity(mvMatrix);
-                mat4.translate(mvMatrix, [0.0, 0.0, -10.0]);
+                drawTriangle(t2, pMatrix, mvMatrix, [0.0, 1.0, -10.0], [1.0, 0.0, 0.0, 1.0]);
+            }
+            
+            function drawTriangle(triangle, proj_Mat, view_Mat, translation, color)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, triangle);
+                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangle.itemSize, gl.FLOAT, false, 0, 0);                
+                mat4.translate(view_Mat, translation);
 
-                gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-                gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+                gl.uniformMatrix4fv(shaderProgram.ProjUniform, false, proj_Mat);
+                gl.uniformMatrix4fv(shaderProgram.ModelViewUniform, false, view_Mat);
+                gl.uniform4fv(shaderProgram.ColorUniform, color);
 
-                gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+                gl.drawArrays(gl.TRIANGLES, 0, triangle.numItems);
             }
 
 
@@ -163,9 +176,10 @@
             {
                 initGL();
                 initShaders();
-                loadSceneOnGPU();
+                var tri1 = LoadTriangle();
+                var tri2 = LoadTriangle();
 
-                drawScene();
+                drawScene(tri1, tri2);
             }
 
         </script>
