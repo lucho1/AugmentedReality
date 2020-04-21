@@ -5,18 +5,30 @@
         <meta charset="utf-8">
         <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
-        <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
-        <script type="text/javascript" src="webgl-utils.js"></script>
+        <!-- Utilities -->
+        <script type="text/javascript" src="utils/glMatrix-0.9.5.min.js"></script>
+        <script type="text/javascript" src="utils/webgl-utils.js"></script>
 
+        <!-- Modules -->
+        <!--<script type="text/javascript" src="modules/Renderer.js"></script>-->
+        <script type="text/javascript" src="Shaders.js"></script>
+
+        <!-- Modules -->
+        <script type="text/javascript" src="modules/Renderer.js"></script>
+
+        <!-- Main -->
+        <script type="text/javascript" src="main.js"></script>
+
+        <!-- Shaders -->
         <script id="DefaultVertexShader" type="x-shader/x-vertex">
-            attribute vec3 aVertexPosition;
+            attribute vec3 a_Position;
 
             uniform mat4 u_ModelViewMatrix;
             uniform mat4 u_ProjMatrix;
 
             void main(void)
             {
-                gl_Position = u_ProjMatrix * u_ModelViewMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = u_ProjMatrix * u_ModelViewMatrix * vec4(a_Position, 1.0);
             }
         </script>
         
@@ -33,166 +45,10 @@
         
         <script type="text/javascript">
 
-            //Global variables
-            var gl;
-            var shaderProgram;
-            var triangleVertexPositionBuffer;
-
-            //Initialize WebGL
-            function initGL()
-            {    
-                var canvas = document.getElementById("webGL-canvas");
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                try
-                {
-                    gl = canvas.getContext("experimental-webgl");
-                    gl.viewportWidth = canvas.width;
-                    gl.viewportHeight = canvas.height;
-                }
-                catch (e) {}
-                if (!gl)
-                    alert("Could not initialise WebGL, sorry :-(... Try suicide");
-            }
-
-            //Get a Shader by ID
-            function getShader(id)
-            {
-                var shaderScript = document.getElementById(id);
-                if (!shaderScript)
-                    return null;                
-
-                var str = "";
-                var k = shaderScript.firstChild;
-                while (k)
-                {
-                    if (k.nodeType == 3)
-                        str += k.textContent;
-
-                    k = k.nextSibling;
-                }
-
-                var shader;
-                if (shaderScript.type == "x-shader/x-fragment")
-                    shader = gl.createShader(gl.FRAGMENT_SHADER);
-                else if (shaderScript.type == "x-shader/x-vertex")
-                    shader = gl.createShader(gl.VERTEX_SHADER);
-                else
-                    return null;
-
-                gl.shaderSource(shader, str);
-                gl.compileShader(shader);
-
-                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-                {
-                    alert("Couldn't Compile Shader: ")
-                    alert(gl.getShaderInfoLog(shader));
-                    return null;
-                }
-
-                return shader;
-            }
-
-            //Initialize Shaders
-            function initShaders()
-            {
-                var fragmentShader = getShader("DefaultFragmentShader");
-                var vertexShader = getShader("DefaultVertexShader");
-
-                shaderProgram = gl.createProgram();
-                gl.attachShader(shaderProgram, vertexShader);
-                gl.attachShader(shaderProgram, fragmentShader);
-                gl.linkProgram(shaderProgram);
-
-                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
-                    alert("Could not initialize shaders");
-
-                gl.useProgram(shaderProgram);
-
-                shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-                gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-                shaderProgram.ProjUniform = gl.getUniformLocation(shaderProgram, "u_ProjMatrix");
-                shaderProgram.ModelViewUniform = gl.getUniformLocation(shaderProgram, "u_ModelViewMatrix");
-                shaderProgram.ColorUniform = gl.getUniformLocation(shaderProgram, "u_Color");
-            }
-
-            // Load Scene (basically, loads the triangle with its buffer)
-            function LoadTriangle()
-            {
-                var triangleVertexPositionBuffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-
-                var vertices = [
-                     0.0, 1.0, 0.0,
-                    -1.0, -1.0, 0.0,
-                     1.0, -1.0, 0.0
-                ];
-
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-                triangleVertexPositionBuffer.vertexSize = 3;
-                triangleVertexPositionBuffer.vertexNum = 3;
-                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.vertexSize, gl.FLOAT, false, 0, 0);     
-
-                return triangleVertexPositionBuffer;
-            }
-
-            //Draw the Scene
-            function drawScene(meshes, meshes_size)
-            {
-                gl.enable(gl.DEPTH_TEST);
-                gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-
-                gl.clearColor(0.0, 0.0, 0.0, 1.0);
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-                
-                var pMatrix = mat4.create();
-                var mvMatrix = mat4.create();
-                mat4.perspective(45, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
-                
-                mesh_color = [0.0, 1.0, 0.0, 1.0];
-                transf = [0.0, 0.0, -10.0];
-                
-                var i = 0;
-                while(i < meshes_size)
-                {
-                    mat4.identity(mvMatrix);
-                    drawTriangle(meshes[i], pMatrix, mvMatrix, transf, mesh_color);
-                    mesh_color = [1.0, 0.0, 0.0, 1.0];
-                    transf = [-5.0, 0.0, -10.0]
-                    ++i;
-                }
-            }
-            
-            function drawTriangle(triangle, proj_Mat, view_Mat, translation, color)
-            {
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangle);        
-                mat4.translate(view_Mat, translation);
-
-                gl.uniformMatrix4fv(shaderProgram.ProjUniform, false, proj_Mat);
-                gl.uniformMatrix4fv(shaderProgram.ModelViewUniform, false, view_Mat);
-                gl.uniform4fv(shaderProgram.ColorUniform, color);
-
-                gl.drawArrays(gl.TRIANGLES, 0, triangle.vertexNum);
-            }
-
-
             //Main loop (by calling previous functions)
             function mainLoop()
             {
-                initGL();
-                initShaders();
-                
-                //var Mesh;
-                //Mesh.color = [1.0, 1.0, 1.0, 1.0];
-                //Mesh.translation = [0.0, 0.0, -10.0];                
-
-                var tri1 = LoadTriangle();
-                var tri2 = LoadTriangle();
-                var meshes_to_draw = new Array(tri1, tri2);
-
-                drawScene(meshes_to_draw, 2);
+                RunMainLoop();
             }
 
         </script>
@@ -200,7 +56,7 @@
     </head>
 
     <body onload="mainLoop();" onresize="mainLoop();">
-        <canvas id="webGL-canvas" style="border: none; width:100%; height:100%; margin: 0 auto;"></canvas>    
+        <canvas id="screen_canvas" style="border: none; width:100%; height:100%; margin: 0 auto;"></canvas>    
     </body>
 
 </html>
