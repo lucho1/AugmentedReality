@@ -1,6 +1,3 @@
-//import '../Shaders.js';
-//<script type="text/javascript" src="../Shaders.js"></script>
-
 class GLRenderer
 {
     #m_Name = "GL Renderer"
@@ -9,8 +6,8 @@ class GLRenderer
     // --- Constructor ---
     constructor()
     {
-        this.getName = function() { return m_Name; }
-        this.getDefaultShader = function() { return this.m_DefaultShader; }
+        this.getName = function() { return this.#m_Name; }
+        this.getDefaultShader = function() { return this.#m_DefaultShader; }
     }
     
     // --- Initialize WebGL ---
@@ -34,6 +31,6 @@ class GLRenderer
     // --- Create Default Shader ---
     CreateDefaultShader = function(vertex_shader, fragment_shader)
     {
-        this.m_DefaultShader = new GLShader("Default Shader", vertex_shader, fragment_shader);
+        this.#m_DefaultShader = new GLShader("Default Shader", vertex_shader, fragment_shader);
     }
 }

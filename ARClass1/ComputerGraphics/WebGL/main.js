@@ -67,7 +67,7 @@ function drawTriangle(triangle, proj_Mat, view_Mat, translation, color, shader)
 }
 
 
-
+// App's Main Loop
 var RunMainLoop = function()
 {
     renderer = new GLRenderer();

@@ -11,12 +11,16 @@ class GLShader
         this.#m_Name = name;
 
         this.CreateShader(vertex_shader, fragment_shader);
-        this.getName = function() { return m_Name; }
-        this.getID = function() { return m_ID; }
+        this.getName = function() { return this.#m_Name; }
+        this.getID = function() { return this.#m_ID; }
     }
 
-    // --- Compile a 'sub-' Shader ---
-    CompileShader = function(id)
+
+    // --------------------------------------------------------------------------
+    // --- Shader Creation & Methods ---
+
+    // Compile a 'sub-' Shader
+    #CompileShader = function(id)
     {
         // Check if shader exists
         var shaderScript = document.getElementById(id);
@@ -63,8 +67,8 @@ class GLShader
     // Create a Shader Program
     CreateShader = function(vertex_shader, fragment_shader)
     {
-       var v_id = this.CompileShader(vertex_shader);
-       var f_id = this.CompileShader(fragment_shader);
+       var v_id = this.#CompileShader(vertex_shader);
+       var f_id = this.#CompileShader(fragment_shader);
        var id = gl.createProgram();
 
         gl.attachShader(id, v_id);
@@ -82,6 +86,7 @@ class GLShader
         this.#m_FragID = f_id;
         this.#m_ID = id;
 
+        // --- Temporary ---
         this.vertexPositionAttribute = gl.getAttribLocation(id, "a_Position");
         gl.enableVertexAttribArray(this.vertexPositionAttribute);
 
@@ -91,6 +96,11 @@ class GLShader
         gl.useProgram(null);
     }
 
+
+    // --------------------------------------------------------------------------
+    // --- Uniforms and GL Stuff ---
+
+    //Use Shader (bind it)
     BindShader = function()
     {
         gl.useProgram(this.#m_ID)
