@@ -8,7 +8,7 @@
         <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
         <script type="text/javascript" src="webgl-utils.js"></script>
 
-        <script id="shader-vs" type="x-shader/x-vertex">
+        <script id="DefaultVertexShader" type="x-shader/x-vertex">
             attribute vec3 aVertexPosition;
 
             uniform mat4 u_ModelViewMatrix;
@@ -20,7 +20,7 @@
             }
         </script>
         
-        <script id="shader-fs" type="x-shader/x-fragment">
+        <script id="DefaultFragmentShader" type="x-shader/x-fragment">
             precision mediump float;
             
             uniform vec4 u_Color;
@@ -39,7 +39,7 @@
             var triangleVertexPositionBuffer;
 
             //Initialize WebGL
-            function initGL(canvas)
+            function initGL()
             {    
                 var canvas = document.getElementById("webGL-canvas");
                 canvas.width = window.innerWidth;
@@ -97,8 +97,8 @@
             //Initialize Shaders
             function initShaders()
             {
-                var fragmentShader = getShader("shader-fs");
-                var vertexShader = getShader("shader-vs");
+                var fragmentShader = getShader("DefaultFragmentShader");
+                var vertexShader = getShader("DefaultVertexShader");
 
                 shaderProgram = gl.createProgram();
                 gl.attachShader(shaderProgram, vertexShader);
@@ -106,7 +106,7 @@
                 gl.linkProgram(shaderProgram);
 
                 if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
-                    alert("Could not initialise shaders");
+                    alert("Could not initialize shaders");
 
                 gl.useProgram(shaderProgram);
 
@@ -131,8 +131,9 @@
                 ];
 
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-                triangleVertexPositionBuffer.itemSize = 3;
-                triangleVertexPositionBuffer.numItems = 3;
+                triangleVertexPositionBuffer.vertexSize = 3;
+                triangleVertexPositionBuffer.vertexNum = 3;
+                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.vertexSize, gl.FLOAT, false, 0, 0);     
 
                 return triangleVertexPositionBuffer;
             }
@@ -162,27 +163,18 @@
                     transf = [-5.0, 0.0, -10.0]
                     ++i;
                 }
-
-                /*foreach(mesh in meshes)
-                {
-                    mat4.identity(mvMatrix);
-                    drawTriangle(mesh, pMatrix, mvMatrix, transf, mesh_color);
-                    mesh_color += [0.1, 0.0, 0.1, 0.0];
-                    transf += [1.0, 0.0, 1.0]
-                }*/
             }
             
             function drawTriangle(triangle, proj_Mat, view_Mat, translation, color)
             {
-                gl.bindBuffer(gl.ARRAY_BUFFER, triangle);
-                gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangle.itemSize, gl.FLOAT, false, 0, 0);                
+                gl.bindBuffer(gl.ARRAY_BUFFER, triangle);        
                 mat4.translate(view_Mat, translation);
 
                 gl.uniformMatrix4fv(shaderProgram.ProjUniform, false, proj_Mat);
                 gl.uniformMatrix4fv(shaderProgram.ModelViewUniform, false, view_Mat);
                 gl.uniform4fv(shaderProgram.ColorUniform, color);
 
-                gl.drawArrays(gl.TRIANGLES, 0, triangle.numItems);
+                gl.drawArrays(gl.TRIANGLES, 0, triangle.vertexNum);
             }
 
 
@@ -191,6 +183,10 @@
             {
                 initGL();
                 initShaders();
+                
+                //var Mesh;
+                //Mesh.color = [1.0, 1.0, 1.0, 1.0];
+                //Mesh.translation = [0.0, 0.0, -10.0];                
 
                 var tri1 = LoadTriangle();
                 var tri2 = LoadTriangle();
