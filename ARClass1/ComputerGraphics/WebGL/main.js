@@ -68,7 +68,7 @@ function drawTriangle(triangle, proj_Mat, view_Mat, translation, color, shader)
 
 
 // App's Main Loop
-var RunMainLoop = function()
+var mainLoop = function()
 {
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "experimental-webgl");
