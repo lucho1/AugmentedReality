@@ -56,12 +56,12 @@ function drawScene(meshes, meshes_size, shader)
 
 function drawTriangle(triangle, proj_Mat, view_Mat, translation, color, shader)
 {
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangle);        
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangle);
     mat4.translate(view_Mat, translation);
 
-    gl.uniformMatrix4fv(shader.ProjUniform, false, proj_Mat);
-    gl.uniformMatrix4fv(shader.ModelViewUniform, false, view_Mat);
-    gl.uniform4fv(shader.ColorUniform, color);
+    shader.SetUniformMat4f("u_ProjMatrix", proj_Mat);
+    shader.SetUniformMat4f("u_ModelViewMatrix", view_Mat);
+    shader.SetUniformVec4f("u_Color", color);
 
     gl.drawArrays(gl.TRIANGLES, 0, triangle.vertexNum);
 }

@@ -4,11 +4,13 @@ class GLShader
     #m_ID = 0;
     #m_VertID = 0;
     #m_FragID = 0;
+    #m_UniformLocCache;
 
     // --- Constructor ---
     constructor(name, vertex_shader, fragment_shader)
     {
         this.#m_Name = name;
+        this.#m_UniformLocCache = new Map();
 
         this.CreateShader(vertex_shader, fragment_shader);
         this.getName = function() { return this.#m_Name; }
@@ -81,18 +83,14 @@ class GLShader
             return null;
         }
 
-        gl.useProgram(id);
         this.#m_VertID = v_id;
         this.#m_FragID = f_id;
         this.#m_ID = id;
-
+        
         // --- Temporary ---
+        gl.useProgram(id);
         this.vertexPositionAttribute = gl.getAttribLocation(id, "a_Position");
         gl.enableVertexAttribArray(this.vertexPositionAttribute);
-
-        this.ProjUniform = gl.getUniformLocation(id, "u_ProjMatrix");
-        this.ModelViewUniform = gl.getUniformLocation(id, "u_ModelViewMatrix");
-        this.ColorUniform = gl.getUniformLocation(id, "u_Color");
         gl.useProgram(null);
     }
 
@@ -100,9 +98,38 @@ class GLShader
     // --------------------------------------------------------------------------
     // --- Uniforms and GL Stuff ---
 
-    //Use Shader (bind it)
+    // Use Shader (bind it)
     BindShader = function()
     {
         gl.useProgram(this.#m_ID)
+    }
+
+    // Get uniform location with a cache system
+    #GetUniformLocation = function(name)
+    {
+        var ret = this.#m_UniformLocCache.get(name);
+        if(ret != undefined)
+            return ret;
+        
+        ret = gl.getUniformLocation(this.#m_ID, name);
+        if(ret == null)
+        {
+            alert("Uniform location invalid on uniform: ");
+            alert(name);
+        }
+
+        this.#m_UniformLocCache.set(name, ret);
+        return ret;
+    }
+
+    // Set Uniforms
+    SetUniformMat4f(name, value)
+    {
+        gl.uniformMatrix4fv(this.#GetUniformLocation(name), false, value);
+    }
+
+    SetUniformVec4f(name, value)
+    {
+        gl.uniform4fv(this.#GetUniformLocation(name), value);
     }
 }
