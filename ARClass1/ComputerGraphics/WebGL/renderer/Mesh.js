@@ -5,21 +5,32 @@ class Mesh
     #m_VertexNum = 0;
     #m_VertexSize = 0;
     #m_Color = [1.0, 1.0, 1.0, 1.0];
-    #m_Transformation = [0.0, 0.0, -10.0];
+    #m_ModelMatrix = mat4.create();
+    #m_Position = [0.0, 0.0, -10.0];
 
     constructor()
     {
+        mat4.identity(this.#m_ModelMatrix);
+
         this.getID              = function() { return this.#m_ID; }
         this.getVertices        = function() { return this.#m_VerticesArr; }
         this.getVertexNumber    = function() { return this.#m_VertexNum; }
         this.getVertexSize      = function() { return this.#m_VertexSize; }
         this.getMeshColor       = function() { return this.#m_Color; }
-        this.getTransform       = function() { return this.#m_Transformation; }
+        this.getModelMatrix     = function() { return this.#m_ModelMatrix; }
+        this.getPos             = function() { return this.#m_Position; }
 
-        this.SetTransform       = function(transf) { this.#m_Transformation = transf; }
         this.SetMeshColor       = function(col) { this.#m_Color = col; }
     }
 
+    //Mesh Modifications
+    SetPosition = function(pos)
+    {
+        this.#m_Position = pos;        
+        mat4.translate(this.#m_ModelMatrix, pos);
+    }
+
+    //Mesh Load
     #SetBuffer = function(id, verts_size, vertices, vPosAttribute)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER, id);
