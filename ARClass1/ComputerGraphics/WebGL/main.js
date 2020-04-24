@@ -2,7 +2,7 @@
 var gl;
 
 //Draw the Scene
-function drawScene(meshes, meshes_size, shader)
+function DrawScene(meshes, meshes_size, shader)
 {
     //Pre-rendering orders
     gl.enable(gl.DEPTH_TEST);
@@ -33,18 +33,18 @@ function drawScene(meshes, meshes_size, shader)
         if(i == 3)
             mat4.rotate(mvMatrix, 3.1415 * 0.25, [0.0, 0.0, 1.0]);
 
-        DrawMesh(meshes[i], mvMatrix, meshes[i].getMeshColor(), shader);
+        DrawMesh(meshes[i], mvMatrix, shader);
         ++i;      
     }
 }
 
-function DrawMesh(mesh, view_Mat, color, shader)
+function DrawMesh(mesh, view_Mat, shader)
 {
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.getID());
     gl.vertexAttribPointer(shader.vPosAtt, mesh.getVertexSize(), gl.FLOAT, false, 0, 0);
 
     shader.SetUniformMat4f("u_ModelViewMatrix", view_Mat);
-    shader.SetUniformVec4f("u_Color", color);
+    shader.SetUniformVec4f("u_Color", mesh.getMeshColor());
 
     gl.drawArrays(gl.TRIANGLES, 0, mesh.getVertexNumber());
 }
@@ -53,13 +53,13 @@ function DrawMesh(mesh, view_Mat, color, shader)
 // App's Main Loop
 var mainLoop = function()
 {
+    //Create Renderer & Setup Default Shader
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "webgl2"); //"experimental-webgl"
-    renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");
-
+    renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    
     shaderProgram = renderer.getDefaultShader();
-    shaderProgram.BindShader();
 
+    //Setup meshes
     tri1 = new Mesh();
     tri1.LoadTriangle(shaderProgram);
     tri1.SetTransform([0.0, 1.5, -10.0]);
@@ -80,7 +80,7 @@ var mainLoop = function()
     sq2.SetTransform([-3.0, 0.0, -10.0]);
     sq2.SetMeshColor([1.0, 1.0, 0.5, 1.0]);
     
+    //Draw
     var meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
-
-    drawScene(meshes_to_draw, 4, shaderProgram);
+    DrawScene(meshes_to_draw, 4, shaderProgram);
 }
