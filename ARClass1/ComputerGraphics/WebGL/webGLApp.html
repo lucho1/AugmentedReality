@@ -10,7 +10,8 @@
         <script type="text/javascript" src="utils/webgl-utils.js"></script>
 
         <!-- Tools/Elements -->
-        <script type="text/javascript" src="renderer/Shaders.js"></script>
+        <script type="text/javascript" src="renderer/Shaders.js"></script>        
+        <script type="text/javascript" src="renderer/Mesh.js"></script>
 
         <!-- Modules -->
         <script type="text/javascript" src="renderer/Renderer.js"></script>
@@ -19,26 +20,31 @@
         <script type="text/javascript" src="main.js"></script>
 
         <!-- Shaders -->
-        <script id="DefaultVertexShader" type="x-shader/x-vertex">
-            attribute vec3 a_Position;
+        <script id="DefaultVertexShader" type="x-shader/x-vertex">#version 300 es
+            in vec3 a_Position;
 
             uniform mat4 u_ModelViewMatrix;
             uniform mat4 u_ProjMatrix;
+            uniform vec4 u_Color;
+
+            out vec4 v_Color;
 
             void main(void)
             {
+                v_Color = u_Color;
                 gl_Position = u_ProjMatrix * u_ModelViewMatrix * vec4(a_Position, 1.0);
             }
         </script>
         
-        <script id="DefaultFragmentShader" type="x-shader/x-fragment">
+        <script id="DefaultFragmentShader" type="x-shader/x-fragment">#version 300 es
             precision mediump float;
             
-            uniform vec4 u_Color;
+            in vec4 v_Color;
+            out vec4 fragColor;
 
             void main(void)
             {
-                gl_FragColor = u_Color;
+                fragColor = v_Color;
             }
         </script>
     </head>

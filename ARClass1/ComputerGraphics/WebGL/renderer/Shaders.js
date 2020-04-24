@@ -89,8 +89,8 @@ class GLShader
         
         // --- Temporary ---
         gl.useProgram(id);
-        this.vertexPositionAttribute = gl.getAttribLocation(id, "a_Position");
-        gl.enableVertexAttribArray(this.vertexPositionAttribute);
+        this.vPosAtt = gl.getAttribLocation(id, "a_Position");
+        gl.enableVertexAttribArray(this.vPosAtt);
         gl.useProgram(null);
     }
 
