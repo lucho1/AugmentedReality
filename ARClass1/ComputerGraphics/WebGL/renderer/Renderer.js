@@ -33,4 +33,17 @@ class GLRenderer
     {
         this.#m_DefaultShader = new GLShader("Default Shader", vertex_shader, fragment_shader);
     }
+
+    // --- Drawing ---
+    DrawMesh = function(mesh, shader_bound) //Considers the shader already bound
+    {
+        gl.bindBuffer(gl.ARRAY_BUFFER, mesh.getID());
+        gl.vertexAttribPointer(shader_bound.vPosAtt, mesh.getVertexSize(), gl.FLOAT, false, 0, 0);
+
+        shader_bound.SetUniformMat4f("u_ModelMatrix", mesh.getModelMatrix());
+        shader_bound.SetUniformVec4f("u_Color", mesh.getMeshColor());   
+
+        gl.drawArrays(gl.TRIANGLES, 0, mesh.getVertexNumber());
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    }
 }

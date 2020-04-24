@@ -104,6 +104,12 @@ class GLShader
         gl.useProgram(this.#m_ID)
     }
 
+    //Unuse Shader
+    UnbindShader = function()
+    {
+        gl.useProgram(null);
+    }
+
     // Get uniform location with a cache system
     #GetUniformLocation = function(name)
     {

@@ -1,5 +1,6 @@
 //Global variables
 var gl;
+var renderer;
 
 //Draw the Scene
 function DrawScene(meshes, meshes_size, shader)
@@ -22,31 +23,16 @@ function DrawScene(meshes, meshes_size, shader)
     shader.BindShader();
     shader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
     shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
-    
-    //meshes[1].SetTransform([0.0, -1.5, -10.0]);    
-    //meshes[3].SetTransform([-3.0, 0.0, -10.0]);
-    
+
     //Rendering
     var i = 0;
     while(i < meshes_size)
-    {
-        //if(i == 3)
-            //mat4.rotate(mvMatrix, 3.1415 * 0.25, [0.0, 0.0, 1.0]);
-
-        DrawMesh(meshes[i], shader);
+    {        
+        renderer.DrawMesh(meshes[i], shader);
         ++i;      
     }
-}
 
-function DrawMesh(mesh, shader)
-{
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.getID());
-    gl.vertexAttribPointer(shader.vPosAtt, mesh.getVertexSize(), gl.FLOAT, false, 0, 0);
-
-    shader.SetUniformMat4f("u_ModelMatrix", mesh.getModelMatrix());
-    shader.SetUniformVec4f("u_Color", mesh.getMeshColor());   
-
-    gl.drawArrays(gl.TRIANGLES, 0, mesh.getVertexNumber());
+    shader.UnbindShader();
 }
 
 
@@ -79,6 +65,7 @@ var mainLoop = function()
     sq2.LoadSquare(shaderProgram);
     sq2.SetPosition([-3.0, 0.0, -10.0]);
     sq2.SetMeshColor([1.0, 1.0, 0.5, 1.0]);
+    sq2.SetRotation(45, [0.0, 0.0, 1.0]);
     
     //Draw
     var meshes_to_draw = new Array(tri1, tri2, sq1, sq2);

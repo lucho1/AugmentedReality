@@ -7,6 +7,7 @@ class Mesh
     #m_Color = [1.0, 1.0, 1.0, 1.0];
     #m_ModelMatrix = mat4.create();
     #m_Position = [0.0, 0.0, -10.0];
+    #m_Orientation = [0.0, 0.0, 0.0];
 
     constructor()
     {
@@ -19,6 +20,7 @@ class Mesh
         this.getMeshColor       = function() { return this.#m_Color; }
         this.getModelMatrix     = function() { return this.#m_ModelMatrix; }
         this.getPos             = function() { return this.#m_Position; }
+        this.getOrientation     = function() { return this.#m_Orientation; }
 
         this.SetMeshColor       = function(col) { this.#m_Color = col; }
     }
@@ -26,8 +28,14 @@ class Mesh
     //Mesh Modifications
     SetPosition = function(pos)
     {
-        this.#m_Position = pos;        
+        this.#m_Position = pos;
         mat4.translate(this.#m_ModelMatrix, pos);
+    }
+
+    SetRotation = function(degrees, axis)
+    {
+        var angle = degrees/180*3.1415;
+        mat4.rotate(this.#m_ModelMatrix, angle, axis);
     }
 
     //Mesh Load
@@ -36,6 +44,7 @@ class Mesh
         gl.bindBuffer(gl.ARRAY_BUFFER, id);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         gl.vertexAttribPointer(vPosAttribute, verts_size, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
 
     // Load a square with its buffer
@@ -54,7 +63,7 @@ class Mesh
             -1.0, -1.0, 0.0
         ];        
 
-        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt);       
+        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt);
         return this.#m_ID;
     }
 
@@ -71,7 +80,7 @@ class Mesh
             1.0, -1.0, 0.0  //v3
         ];
         
-        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt);
+        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt);   
         return this.#m_ID;
     }
 }
