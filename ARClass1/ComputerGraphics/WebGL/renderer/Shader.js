@@ -91,6 +91,9 @@ class GLShader
         gl.useProgram(id);
         this.vPosAtt = gl.getAttribLocation(id, "a_Position");
         gl.enableVertexAttribArray(this.vPosAtt);
+        
+        this.vTCoordAtt = gl.getAttribLocation(id, "a_TexCoords");
+        gl.enableVertexAttribArray(this.vTCoordAtt);
         gl.useProgram(null);
     }
 
