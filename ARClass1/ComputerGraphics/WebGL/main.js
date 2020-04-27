@@ -66,8 +66,21 @@ var mainLoop = function()
     sq2.SetPosition([-3.0, 0.0, -10.0]);
     sq2.SetMeshColor([1.0, 1.0, 0.5, 1.0]);
     sq2.SetRotation(45, [0.0, 0.0, 1.0]);
+
+    //Create Textures
+    //texture1 = new Texture('images/wall.jpg');
+    //tri1.SetMeshTexture(texture1);
+    //texture2 = new Texture('images/awesomeface.png');
+    //sq2.SetMeshTexture(texture2);
     
     //Draw
     var meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
+    //reDraw(meshes_to_draw, 4, shaderProgram);
     DrawScene(meshes_to_draw, 4, shaderProgram);
+}
+
+function reDraw(meshes, meshes_size, shader)
+{
+    requestAnimationFrame(reDraw);    
+    DrawScene(meshes, meshes_size, shader);
 }

@@ -4,10 +4,13 @@ class Mesh
     #m_VerticesArr = [0.0];
     #m_VertexNum = 0;
     #m_VertexSize = [0];
-    #m_Color = [1.0, 1.0, 1.0, 1.0];
+    
     #m_ModelMatrix = mat4.create();
     #m_Position = [0.0, 0.0, -10.0];
     #m_Orientation = [0.0, 0.0, 0.0];
+    
+    #m_Color = [1.0, 1.0, 1.0, 1.0];
+    #m_Texture = null;
 
     constructor()
     {
@@ -17,12 +20,16 @@ class Mesh
         this.getVertices        = function() { return this.#m_VerticesArr; }
         this.getVertexNumber    = function() { return this.#m_VertexNum; }
         this.getVertexSize      = function() { return this.#m_VertexSize; }
-        this.getMeshColor       = function() { return this.#m_Color; }
+        
         this.getModelMatrix     = function() { return this.#m_ModelMatrix; }
         this.getPos             = function() { return this.#m_Position; }
         this.getOrientation     = function() { return this.#m_Orientation; }
+        
+        this.getMeshColor       = function() { return this.#m_Color; }
+        this.getMeshTexture     = function() { return this.#m_Texture; }
 
         this.SetMeshColor       = function(col) { this.#m_Color = col; }
+        this.SetMeshTexture     = function(texture) { this.#m_Texture = texture; }
     }
 
     //Mesh Modifications
