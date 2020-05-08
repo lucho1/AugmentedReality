@@ -1,95 +1,28 @@
 //Global variables
 var gl;
-var renderer;
+var renderer, AppInput, MainCamera;
 var DrawMeshes, meshesSize, defShader;
 
-//Input Stuff
-var camera = {
-    position: [0.0, 0.0, 5.0],
-    yaw: 0.0,
-    pitch: 0.0
-}
-
+//Delta Time
 var time = { dt: 1.0/0.0, lastTimeMS: 0}
+
+//Global Const Variables
 const PI = 3.14159265359
 const TWOPI = 6.28318530718
 const HALFPI = 1.57079632679
+
+//Global Utility Functions
 function DEGTORAD(deg) { return PI*deg/180.0; }
 function RADTODEG(rad) { return 180.0*rad/PI; }
 function mod(val1, val2) { return val1%val2; }
 function clamp(val1, min, max) { return val1 < min ? min : (val1 > max ? max : val1); }
 
+//Time Initialization
 function InitTime()
 {
     var d = new Date();
     time.lastTimeMS = d.getTime();
 }
-
-function ProcessInput()
-{
-    //https://keycode.info/
-    var speed = 20.0;
-    var mouse_speed = 50.0;
-    
-    //Process Keyboard
-    if(input.keys[16] == ButtonState.PRESSED) //SHIFT == double speed
-        speed *= 2.0;
-    if(input.keys[87] == ButtonState.PRESSED) //W
-        camera.position[2] -= speed * time.dt;
-    if(input.keys[83] == ButtonState.PRESSED) //S
-        camera.position[2] += speed * time.dt;
-    if(input.keys[65] == ButtonState.PRESSED) //A
-        camera.position[0] -= speed * time.dt;
-    if(input.keys[68] == ButtonState.PRESSED) //D
-        camera.position[0] += speed * time.dt;
-    if(input.keys[69] == ButtonState.PRESSED) //E
-        camera.position[1] += speed * time.dt;
-    if(input.keys[81] == ButtonState.PRESSED) //Q
-        camera.position[1] -= speed * time.dt;
-    if(input.keys[82] == ButtonState.PRESSED) //R
-    {
-        camera.position = [0.0, 0.0, 5.0];
-        camera.yaw = 0.0;
-        camera.pitch = 0.0;
-    }
-
-    //Process Mouse
-    if(input.mouseButtons[0] == ButtonState.PRESSED) //Rotation
-    {
-        camera.yaw += input.mouseDX * 0.01;
-        camera.yaw = mod(camera.yaw, TWOPI);
-        camera.pitch += input.mouseDY * 0.01;
-        camera.pitch = clamp(camera.pitch, -HALFPI, HALFPI);
-    }
-    if(input.mouseButtons[1] == ButtonState.PRESSED) //Pan
-    {
-        camera.position[0] -= input.mouseDX*time.dt;
-        camera.position[1] += input.mouseDY*time.dt;
-    }
-    if(input.mouseButtons[0] == ButtonState.SCROLLED) //Zoom
-    {
-        var dir = input.mouseDW/100;
-        camera.position[2] += dir * mouse_speed * time.dt;
-        input.mouseDW = 0;
-    }
-
-    //Auto Transitions
-    for(var i = 0; i < 300; ++i)
-    {
-        if(input.keys[i] == ButtonState.DOWN) input.keys[i] = ButtonState.PRESSED;
-        if(input.keys[i] == ButtonState.UP) input.keys[i] = ButtonState.IDLE;
-    }
-    for(var i = 0; i < 10; ++i)
-    {
-        if(input.mouseButtons[i] == ButtonState.DOWN) input.mouseButtons[i] = ButtonState.PRESSED;
-        if(input.mouseButtons[i] == ButtonState.UP) input.mouseButtons[i] = ButtonState.IDLE;
-    }
-
-    input.mouseDX = 0;
-    input.mouseDY = 0;
-    input.mouseDW = 0;
-}
-
 
 //Draw the Scene
 function DrawScene()
@@ -108,10 +41,10 @@ function DrawScene()
     mat4.perspective(60, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
 
     //Camera Move
-    var cameraPos = vec3.create(camera.position);
+    var cameraPos = vec3.create(MainCamera.getPosition());
     mat4.translate(mvMatrix, vec3.negate(cameraPos));
-    mat4.rotate(mvMatrix, camera.pitch, [1.0, 0.0, 0.0]);
-    mat4.rotate(mvMatrix, camera.yaw, [0.0, 1.0, 0.0]);
+    mat4.rotate(mvMatrix, MainCamera.getXRotation(), [1.0, 0.0, 0.0]);
+    mat4.rotate(mvMatrix, MainCamera.getYRotation(), [0.0, 1.0, 0.0]);
     
     //Rendering preparation (Binding & Uniforms)
     defShader.BindShader();
@@ -137,22 +70,26 @@ function Update()
     time.lastTimeMS = timeMS;
 
     requestAnimationFrame(Update);
-    ProcessInput();
+    MainCamera.MoveCamera(time.dt);
+    //ProcessInput();    
     DrawScene();
+    AppInput.ResetInput();
 }
 
 
 // App's Main Loop
 var mainLoop = function()
 {
+    //Time Start
     InitTime();
 
     //Create Renderer
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "webgl2"); //"experimental-webgl"
 
-    //Create Input
-    var InputObject = new Input();
+    //Create Input & Main Camera
+    AppInput = new Input();
+    MainCamera = new Camera();
 
     //Setup Default Shader
     renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    

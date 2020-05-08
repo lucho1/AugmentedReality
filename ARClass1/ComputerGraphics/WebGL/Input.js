@@ -62,4 +62,23 @@ class Input
         document.onmousemove = this.#HandleMouseMove;
         document.onwheel = this.#HandleMouseWheel;
     }
+
+    ResetInput = function()
+    {
+        //Auto Transitions
+        for(var i = 0; i < 300; ++i)
+        {
+            if(input.keys[i] == ButtonState.DOWN) input.keys[i] = ButtonState.PRESSED;
+            if(input.keys[i] == ButtonState.UP) input.keys[i] = ButtonState.IDLE;
+        }
+        for(var i = 0; i < 10; ++i)
+        {
+            if(input.mouseButtons[i] == ButtonState.DOWN) input.mouseButtons[i] = ButtonState.PRESSED;
+            if(input.mouseButtons[i] == ButtonState.UP) input.mouseButtons[i] = ButtonState.IDLE;
+        }
+
+        input.mouseDX = 0;
+        input.mouseDY = 0;
+        input.mouseDW = 0;
+    }
 }
