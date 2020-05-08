@@ -19,8 +19,9 @@ class Texture
     #m_Texture = 0;
     #m_Path = "";
 
-    constructor(path)
+    constructor(path, name)
     {
+        this.m_Name = name;
         this.#GenerateTexture(path);
         this.getTexture = function() { return this.#m_Texture; }
     }

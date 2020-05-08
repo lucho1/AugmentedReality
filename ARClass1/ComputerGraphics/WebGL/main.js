@@ -69,9 +69,9 @@ var mainLoop = function()
     sq2.SetRotation(45, [0.0, 0.0, 1.0]);
 
     //Create Textures
-    texture1 = new Texture("images/wall.jpg");
+    texture1 = new Texture("images/wall.jpg", "texture1");
     tri1.SetMeshTexture(texture1);
-    //texture2 = new Texture('images/awesomeface.png');
+    //texture2 = new Texture("images/awesomeface.png", "texture2");
     //sq2.SetMeshTexture(texture2);
     
     //Draw

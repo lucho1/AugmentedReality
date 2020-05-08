@@ -63,6 +63,7 @@ class GLRenderer
             gl.bindTexture(gl.TEXTURE_2D, mesh.getMeshTexture().getTexture());
             shader_bound.SetUniform1i("u_AlbedoTexture", 0);
             shader_bound.SetUniform1i("u_UseTextures", 1);
+            //console.log(mesh.getMeshTexture().m_Name);
         }
 
         gl.drawArrays(gl.TRIANGLES, 0, mesh.getVertexNumber());
