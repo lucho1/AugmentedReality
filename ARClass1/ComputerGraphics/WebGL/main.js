@@ -1,8 +1,7 @@
 //Global variables
 var gl;
 var renderer;
-
-var meshes, meshes_size, defShader;
+var meshes_to_draw, meshes_size, defShader;
 
 //Draw the Scene
 function DrawScene()
@@ -30,7 +29,7 @@ function DrawScene()
     var i = 0;
     while(i < meshes_size)
     {        
-        renderer.DrawMesh(meshes[i], defShader);
+        renderer.DrawMesh(meshes_to_draw[i], defShader);
         ++i;      
     }
 
@@ -45,26 +44,26 @@ var mainLoop = function()
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "webgl2"); //"experimental-webgl"
     renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    
-    shaderProgram = renderer.getDefaultShader();
+    defShader = renderer.getDefaultShader();
 
     //Setup meshes
     tri1 = new Mesh();
-    tri1.LoadTriangle(shaderProgram);
+    tri1.LoadTriangle(defShader);
     tri1.SetPosition([0.0, 1.5, -10.0]);
     tri1.SetMeshColor([0.0, 1.0, 0.5, 1.0]);
 
     sq1 = new Mesh();
-    sq1.LoadSquare(shaderProgram);
+    sq1.LoadSquare(defShader);
     sq1.SetPosition([3.0, 0.0, -10.0]);
     sq1.SetMeshColor([0.0, 0.5, 1.0, 1.0]);
 
     tri2 = new Mesh();
-    tri2.LoadTriangle(shaderProgram);
+    tri2.LoadTriangle(defShader);
     tri2.SetPosition([0.0, -1.5, -10.0]);
     tri2.SetMeshColor([1.0, 0.0, 0.5, 1.0]);
 
     sq2 = new Mesh();
-    sq2.LoadSquare(shaderProgram);
+    sq2.LoadSquare(defShader);
     sq2.SetPosition([-3.0, 0.0, -10.0]);
     sq2.SetMeshColor([1.0, 1.0, 0.5, 1.0]);
     sq2.SetRotation(45, [0.0, 0.0, 1.0]);
@@ -76,9 +75,7 @@ var mainLoop = function()
     //sq2.SetMeshTexture(texture2);
     
     //Draw
-    var meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
-    defShader = shaderProgram;
-    meshes = meshes_to_draw;
+    meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
     meshes_size = 4;
     reDraw();
 }
