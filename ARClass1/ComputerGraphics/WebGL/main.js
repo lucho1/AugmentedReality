@@ -2,8 +2,10 @@
 var gl;
 var renderer;
 
+var meshes, meshes_size, defShader;
+
 //Draw the Scene
-function DrawScene(meshes, meshes_size, shader)
+function DrawScene()
 {
     //Pre-rendering orders
     gl.enable(gl.DEPTH_TEST);
@@ -20,19 +22,19 @@ function DrawScene(meshes, meshes_size, shader)
     mat4.perspective(45, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
     
     //Rendering preparation (Binding & Uniforms)
-    shader.BindShader();
-    shader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
-    shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
+    defShader.BindShader();
+    defShader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
+    defShader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
 
     //Rendering
     var i = 0;
     while(i < meshes_size)
     {        
-        renderer.DrawMesh(meshes[i], shader);
+        renderer.DrawMesh(meshes[i], defShader);
         ++i;      
     }
 
-    shader.UnbindShader();
+    defShader.UnbindShader();
 }
 
 
@@ -68,19 +70,22 @@ var mainLoop = function()
     sq2.SetRotation(45, [0.0, 0.0, 1.0]);
 
     //Create Textures
-    //texture1 = new Texture('images/wall.jpg');
-    //tri1.SetMeshTexture(texture1);
+    texture1 = new Texture("images/wall.jpg");
+    tri1.SetMeshTexture(texture1);
     //texture2 = new Texture('images/awesomeface.png');
     //sq2.SetMeshTexture(texture2);
     
     //Draw
     var meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
-    //reDraw(meshes_to_draw, 4, shaderProgram);
-    DrawScene(meshes_to_draw, 4, shaderProgram);
+    defShader = shaderProgram;
+    meshes = meshes_to_draw;
+    meshes_size = 4;
+    reDraw();
+    //DrawScene(meshes_to_draw, 4, shaderProgram);
 }
 
-function reDraw(meshes, meshes_size, shader)
+function reDraw()
 {
     requestAnimationFrame(reDraw);    
-    DrawScene(meshes, meshes_size, shader);
+    DrawScene();
 }

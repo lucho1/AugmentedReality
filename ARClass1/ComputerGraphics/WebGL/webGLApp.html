@@ -8,6 +8,7 @@
         <!-- Utilities -->
         <script type="text/javascript" src="utils/glMatrix-0.9.5.min.js"></script>
         <script type="text/javascript" src="utils/webgl-utils.js"></script>
+        <script type="text/javascript" src="debug/webgl-debug.js"></script>
 
         <!-- Tools/Elements -->
         <script type="text/javascript" src="renderer/Shader.js"></script>        
@@ -58,6 +59,8 @@
                     fragColor = texture(u_AlbedoTexture, v_TexCoords) * v_Color;
                 else
                     fragColor = v_Color;
+
+                //fragColor = vec4(v_TexCoords, 1.0, 1.0);
             }
         </script>
     </head>

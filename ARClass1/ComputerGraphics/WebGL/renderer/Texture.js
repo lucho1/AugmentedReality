@@ -1,32 +1,10 @@
-class Texture
-{
-    #m_ID = 0;
-    #m_Image = null;
-    #m_Path = "null";
+var p_Texture;
 
-    constructor(path)
-    {
-        this.#GenerateTexture(path);
-
-        this.getPath = function() { return this.#m_Path; }
-        this.getID = function() { return this.#m_ID; }
-        this.getImage = function() { return this.#m_Image; }
-    }
-
-    #GenerateTexture = function(path)
-    {
-        this.#m_ID = gl.createTexture();
-        this.#m_Image = new Image();
-
-        this.#m_Image.onload = function() { this.#LoadTexture(this.#m_Image, this.#m_ID) }
-        this.#m_Path = path;
-    }
-
-    #LoadTexture = function(image, texture)
+LoadTexture = function(texture)
     {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
@@ -35,5 +13,27 @@ class Texture
 
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+
+class Texture
+{
+    m_Texture = 0;
+    #m_Image = null;
+    #m_Path = "null";
+
+    constructor(path)
+    {
+        this.#GenerateTexture(path);
+        //this.getID = function() { return m_Texture; }
+    }
+
+    #GenerateTexture = function(path)
+    {
+        p_Texture = gl.createTexture();
+        p_Texture.image = new Image();
+        p_Texture.image.onload = function() { LoadTexture(p_Texture) }
+        p_Texture.image.src = path;
+        this.m_Texture = p_Texture;
     }
 }
