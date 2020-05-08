@@ -63,11 +63,13 @@ class GLRenderer
             gl.bindTexture(gl.TEXTURE_2D, mesh.getMeshTexture().getTexture());
             shader_bound.SetUniform1i("u_AlbedoTexture", 0);
             shader_bound.SetUniform1i("u_UseTextures", 1);
-            //console.log(mesh.getMeshTexture().m_Name);
         }
 
-        gl.drawArrays(gl.TRIANGLES, 0, mesh.getVertexNumber());
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.getIndices());
+        gl.drawElements(gl.TRIANGLES, mesh.getIndicesSize(), gl.UNSIGNED_SHORT, 0);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 }

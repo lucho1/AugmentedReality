@@ -21,7 +21,6 @@ class Texture
 
     constructor(path, name)
     {
-        this.m_Name = name;
         this.#GenerateTexture(path);
         this.getTexture = function() { return this.#m_Texture; }
     }

@@ -1,10 +1,12 @@
 class Mesh
 {
     //Buffers
-    #m_ID = 0;
-    #m_VerticesArr = [0.0];
-    #m_VertexNum = 0;
+    #m_VBOID = 0;
+    #m_VerticesNum = 0;
     #m_VertexSize = [0];
+
+    #m_IBOID = 0;
+    #m_IndicesSize = 0;
     
     //Transformations
     #m_ModelMatrix = mat4.create();
@@ -18,10 +20,11 @@ class Mesh
     constructor()
     {        
         //Buffers
-        this.getID              = function() { return this.#m_ID; }
-        this.getVertices        = function() { return this.#m_VerticesArr; }
-        this.getVertexNumber    = function() { return this.#m_VertexNum; }
+        this.getID              = function() { return this.#m_VBOID; }
+        this.getVerticesNumber  = function() { return this.#m_VerticesNum; }
         this.getVertexSize      = function() { return this.#m_VertexSize; }
+        this.getIndices         = function() { return this.#m_IBOID; }
+        this.getIndicesSize     = function() { return this.#m_IndicesSize; }
         
         //Transformations
         mat4.identity(this.#m_ModelMatrix);
@@ -63,31 +66,41 @@ class Mesh
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
 
+    #SetIndexBuffer = function(id, indices)
+    {
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, id);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
+
     // Load a square with its buffer
     LoadSquare = function(shader)
     {
-        this.#m_ID = gl.createBuffer();
-        this.#m_VertexNum = 6;
+        this.#m_VBOID = gl.createBuffer();
+        this.#m_VerticesNum = 4;
         this.#m_VertexSize = [3, 2];
         
         var verts = [
-            -1.0, 1.0, 0.0, 0.0, 1.0,   //v1
-            -1.0, -1.0, 0.0, 0.0, 0.0,  //v2
-             1.0, 1.0, 0.0, 1.0, 1.0,   //v3
-             1.0, 1.0, 0.0, 1.0, 1.0,   //v4
              1.0, -1.0, 0.0, 1.0, 0.0,  //v5
-            -1.0, -1.0, 0.0, 0.0, 0.0   //v6
+             1.0, 1.0, 0.0, 1.0, 1.0,   //v3
+            -1.0, 1.0, 0.0, 0.0, 1.0,   //v1
+            -1.0, -1.0, 0.0, 0.0, 0.0  //v2
         ];
 
-        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt);
-        return this.#m_ID;
+        var indices = [ 0, 1, 3, 3, 2, 1];
+        this.#m_IBOID = gl.createBuffer();
+        this.#m_IndicesSize = 6;
+        
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt);
+        this.#SetIndexBuffer(this.#m_IBOID, indices);
+        return this.#m_VBOID;
     }
 
     // Load a Triangle with its buffer
     LoadTriangle = function(shader)
     {
-        this.#m_ID = gl.createBuffer();
-        this.#m_VertexNum = 3;
+        this.#m_VBOID = gl.createBuffer();
+        this.#m_VerticesNum = 3;
         this.#m_VertexSize = [3, 2];
         
         var verts = [
@@ -96,7 +109,12 @@ class Mesh
              1.0, -1.0, 0.0, 1.0, 0.0    //v3
         ];
         
-        this.#SetBuffer(this.#m_ID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt); 
-        return this.#m_ID;
+        var indices = [0, 1, 2];
+        this.#m_IBOID = gl.createBuffer();
+        this.#m_IndicesSize = 3;
+
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt); 
+        this.#SetIndexBuffer(this.#m_IBOID, indices);
+        return this.#m_VBOID;
     }
 }
