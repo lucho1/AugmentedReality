@@ -3,7 +3,6 @@ var gl;
 var renderer;
 var DrawMeshes, meshesSize, defShader;
 
-
 //Input Stuff
 var camera = {
     position: [0.0, 0.0, 5.0],
@@ -11,27 +10,7 @@ var camera = {
     pitch: 0.0
 }
 
-var input = {
-    keys: [],
-    mouseButtons: [],
-    mouseX: 0,
-    mouseY: 0,
-    mouseDX: 0,
-    mouseDY: 0,
-    mouseDW: 0,
-    lastMouseX: 0,
-    lastMouseY: 0
-}
-
 var time = { dt: 1.0/0.0, lastTimeMS: 0}
-var ButtonState = {
-    IDLE: 'idle',
-    DOWN: 'down',
-    PRESSED: 'pressed',
-    UP: 'up',
-    SCROLLED: 'scrolled'
-}
-
 const PI = 3.14159265359
 const TWOPI = 6.28318530718
 const HALFPI = 1.57079632679
@@ -44,43 +23,6 @@ function InitTime()
 {
     var d = new Date();
     time.lastTimeMS = d.getTime();
-}
-
-function HandleKeyDown(event) { input.keys[event.keyCode] = ButtonState.DOWN; }
-function HandleKeyUp(event) { input.keys[event.keyCode] = ButtonState.UP; }
-function HandleMouseUp(event) { input.mouseButtons[event.button] = ButtonState.UP; }
-function HandleMouseDown(event)
-{
-    input.mouseButtons[event.button] = ButtonState.DOWN;
-    input.lastMouseX = event.clientX;
-    input.lastMouseY = event.clientY;
-}
-function HandleMouseMove(event)
-{
-    var mousex = event.clientX;
-    var mousey = event.clientY;
-    input.mouseDX = mousex - input.lastMouseX;
-    input.mouseDY = mousey - input.lastMouseY;
-    input.lastMouseX = mousex;
-    input.lastMouseY = mousey;
-}
-function HandleMouseWheel(event)
-{
-    input.mouseButtons[event.button] = ButtonState.SCROLLED;
-    input.mouseDW = event.deltaY;
-}
-
-function InitInput()
-{
-    for(var i = 0; i < 300; ++i) { input.keys[i] = ButtonState.IDLE; }
-    for(var i = 0; i < 10; ++i) { input.mouseButtons[i] = ButtonState.IDLE; }
-
-    document.onkeydown = HandleKeyDown;
-    document.onkeyup = HandleKeyUp;
-    document.onmousedown = HandleMouseDown;
-    document.onmouseup = HandleMouseUp;
-    document.onmousemove = HandleMouseMove;
-    document.onwheel = HandleMouseWheel;
 }
 
 function ProcessInput()
@@ -205,10 +147,14 @@ var mainLoop = function()
 {
     InitTime();
 
-    //Create Renderer & Setup Default Shader
+    //Create Renderer
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "webgl2"); //"experimental-webgl"
-    InitInput();
+
+    //Create Input
+    var InputObject = new Input();
+
+    //Setup Default Shader
     renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    
     defShader = renderer.getDefaultShader();
 
