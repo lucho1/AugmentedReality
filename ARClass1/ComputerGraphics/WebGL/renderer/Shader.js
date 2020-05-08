@@ -11,8 +11,8 @@ class GLShader
     {
         this.#m_Name = name;
         this.#m_UniformLocCache = new Map();
-
         this.CreateShader(vertex_shader, fragment_shader);
+        
         this.getName = function() { return this.#m_Name; }
         this.getID = function() { return this.#m_ID; }
     }

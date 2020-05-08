@@ -1,7 +1,6 @@
 var p_Texture;
-
 LoadTexture = function(texture)
-    {
+{
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
@@ -13,19 +12,17 @@ LoadTexture = function(texture)
 
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.bindTexture(gl.TEXTURE_2D, null);
-    }
-
+}
 
 class Texture
 {
-    m_Texture = 0;
-    #m_Image = null;
-    #m_Path = "null";
+    #m_Texture = 0;
+    #m_Path = "";
 
     constructor(path)
     {
         this.#GenerateTexture(path);
-        //this.getID = function() { return m_Texture; }
+        this.getTexture = function() { return this.#m_Texture; }
     }
 
     #GenerateTexture = function(path)
@@ -34,6 +31,7 @@ class Texture
         p_Texture.image = new Image();
         p_Texture.image.onload = function() { LoadTexture(p_Texture) }
         p_Texture.image.src = path;
-        this.m_Texture = p_Texture;
+        this.#m_Texture = p_Texture;
+        this.#m_Path = p_Texture.image.src;
     }
 }

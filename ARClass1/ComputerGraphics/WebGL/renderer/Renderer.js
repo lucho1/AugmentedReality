@@ -1,24 +1,3 @@
-// --- Error Callback ---
-function throwOnGLError(err, funcName, args) {
-    throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
-}
-
-function logGLCall(functionName, args) {   
-   console.log("gl." + functionName + "(" + 
-      WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");   
-}
-
-function validateNoneOfTheArgsAreUndefined(functionName, args) {
-   for (var ii = 0; ii < args.length; ++ii)
-   {
-     if (args[ii] === undefined)
-     {
-       console.error("undefined passed to gl." + functionName + "(" +
-                      WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
-     }
-   }
-}
-
 class GLRenderer
 {
     #m_Name = "GL Renderer"
@@ -81,7 +60,7 @@ class GLRenderer
         if(mesh.getMeshTexture() != null)
         {
             gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, mesh.getMeshTexture().m_Texture);
+            gl.bindTexture(gl.TEXTURE_2D, mesh.getMeshTexture().getTexture());
             shader_bound.SetUniform1i("u_AlbedoTexture", 0);
             shader_bound.SetUniform1i("u_UseTextures", 1);
         }

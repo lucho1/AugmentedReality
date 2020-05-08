@@ -81,7 +81,6 @@ var mainLoop = function()
     meshes = meshes_to_draw;
     meshes_size = 4;
     reDraw();
-    //DrawScene(meshes_to_draw, 4, shaderProgram);
 }
 
 function reDraw()
