@@ -3,13 +3,13 @@ var gl;
 var Renderer, AppInput, MainCamera, MainScene;
 var defShader;
 
-//Delta Time
-var time = { dt: 1.0/0.0, lastTimeMS: 0}
-
 //Global Const Variables
 const PI = 3.14159265359
 const TWOPI = 6.28318530718
 const HALFPI = 1.57079632679
+
+//Delta Time
+var time = { dt: 1.0/0.0, lastTimeMS: 0}
 
 //Global Utility Functions
 function DEGTORAD(deg) { return PI*deg/180.0; }
