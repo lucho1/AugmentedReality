@@ -1,7 +1,153 @@
 //Global variables
 var gl;
 var renderer;
-var meshes_to_draw, meshes_size, defShader;
+var DrawMeshes, meshesSize, defShader;
+
+
+//Input Stuff
+var camera = {
+    position: [0.0, 0.0, 5.0],
+    yaw: 0.0,
+    pitch: 0.0
+}
+
+var input = {
+    keys: [],
+    mouseButtons: [],
+    mouseX: 0,
+    mouseY: 0,
+    mouseDX: 0,
+    mouseDY: 0,
+    mouseDW: 0,
+    lastMouseX: 0,
+    lastMouseY: 0
+}
+
+var time = { dt: 1.0/0.0, lastTimeMS: 0}
+var ButtonState = {
+    IDLE: 'idle',
+    DOWN: 'down',
+    PRESSED: 'pressed',
+    UP: 'up',
+    SCROLLED: 'scrolled'
+}
+
+const PI = 3.14159265359
+const TWOPI = 6.28318530718
+const HALFPI = 1.57079632679
+function DEGTORAD(deg) { return PI*deg/180.0; }
+function RADTODEG(rad) { return 180.0*rad/PI; }
+function mod(val1, val2) { return val1%val2; }
+function clamp(val1, min, max) { return val1 < min ? min : (val1 > max ? max : val1); }
+
+function InitTime()
+{
+    var d = new Date();
+    time.lastTimeMS = d.getTime();
+}
+
+function HandleKeyDown(event) { input.keys[event.keyCode] = ButtonState.DOWN; }
+function HandleKeyUp(event) { input.keys[event.keyCode] = ButtonState.UP; }
+function HandleMouseUp(event) { input.mouseButtons[event.button] = ButtonState.UP; }
+function HandleMouseDown(event)
+{
+    input.mouseButtons[event.button] = ButtonState.DOWN;
+    input.lastMouseX = event.clientX;
+    input.lastMouseY = event.clientY;
+}
+function HandleMouseMove(event)
+{
+    var mousex = event.clientX;
+    var mousey = event.clientY;
+    input.mouseDX = mousex - input.lastMouseX;
+    input.mouseDY = mousey - input.lastMouseY;
+    input.lastMouseX = mousex;
+    input.lastMouseY = mousey;
+}
+function HandleMouseWheel(event)
+{
+    input.mouseButtons[event.button] = ButtonState.SCROLLED;
+    input.mouseDW = event.deltaY;
+}
+
+function InitInput()
+{
+    for(var i = 0; i < 300; ++i) { input.keys[i] = ButtonState.IDLE; }
+    for(var i = 0; i < 10; ++i) { input.mouseButtons[i] = ButtonState.IDLE; }
+
+    document.onkeydown = HandleKeyDown;
+    document.onkeyup = HandleKeyUp;
+    document.onmousedown = HandleMouseDown;
+    document.onmouseup = HandleMouseUp;
+    document.onmousemove = HandleMouseMove;
+    document.onwheel = HandleMouseWheel;
+}
+
+function ProcessInput()
+{
+    //https://keycode.info/
+    var speed = 20.0;
+    var mouse_speed = 50.0;
+    
+    //Process Keyboard
+    if(input.keys[16] == ButtonState.PRESSED) //SHIFT == double speed
+        speed *= 2.0;
+    if(input.keys[87] == ButtonState.PRESSED) //W
+        camera.position[2] -= speed * time.dt;
+    if(input.keys[83] == ButtonState.PRESSED) //S
+        camera.position[2] += speed * time.dt;
+    if(input.keys[65] == ButtonState.PRESSED) //A
+        camera.position[0] -= speed * time.dt;
+    if(input.keys[68] == ButtonState.PRESSED) //D
+        camera.position[0] += speed * time.dt;
+    if(input.keys[69] == ButtonState.PRESSED) //E
+        camera.position[1] += speed * time.dt;
+    if(input.keys[81] == ButtonState.PRESSED) //Q
+        camera.position[1] -= speed * time.dt;
+    if(input.keys[82] == ButtonState.PRESSED) //R
+    {
+        camera.position = [0.0, 0.0, 5.0];
+        camera.yaw = 0.0;
+        camera.pitch = 0.0;
+    }
+
+    //Process Mouse
+    if(input.mouseButtons[0] == ButtonState.PRESSED) //Rotation
+    {
+        camera.yaw += input.mouseDX * 0.01;
+        camera.yaw = mod(camera.yaw, TWOPI);
+        camera.pitch += input.mouseDY * 0.01;
+        camera.pitch = clamp(camera.pitch, -HALFPI, HALFPI);
+    }
+    if(input.mouseButtons[1] == ButtonState.PRESSED) //Pan
+    {
+        camera.position[0] -= input.mouseDX*time.dt;
+        camera.position[1] += input.mouseDY*time.dt;
+    }
+    if(input.mouseButtons[0] == ButtonState.SCROLLED) //Zoom
+    {
+        var dir = input.mouseDW/100;
+        camera.position[2] += dir * mouse_speed * time.dt;
+        input.mouseDW = 0;
+    }
+
+    //Auto Transitions
+    for(var i = 0; i < 300; ++i)
+    {
+        if(input.keys[i] == ButtonState.DOWN) input.keys[i] = ButtonState.PRESSED;
+        if(input.keys[i] == ButtonState.UP) input.keys[i] = ButtonState.IDLE;
+    }
+    for(var i = 0; i < 10; ++i)
+    {
+        if(input.mouseButtons[i] == ButtonState.DOWN) input.mouseButtons[i] = ButtonState.PRESSED;
+        if(input.mouseButtons[i] == ButtonState.UP) input.mouseButtons[i] = ButtonState.IDLE;
+    }
+
+    input.mouseDX = 0;
+    input.mouseDY = 0;
+    input.mouseDW = 0;
+}
+
 
 //Draw the Scene
 function DrawScene()
@@ -9,7 +155,6 @@ function DrawScene()
     //Pre-rendering orders
     gl.enable(gl.DEPTH_TEST);
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
@@ -18,7 +163,13 @@ function DrawScene()
     var mvMatrix = mat4.create();
 
     mat4.identity(mvMatrix);
-    mat4.perspective(45, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+    mat4.perspective(60, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    //Camera Move
+    var cameraPos = vec3.create(camera.position);
+    mat4.translate(mvMatrix, vec3.negate(cameraPos));
+    mat4.rotate(mvMatrix, camera.pitch, [1.0, 0.0, 0.0]);
+    mat4.rotate(mvMatrix, camera.yaw, [0.0, 1.0, 0.0]);
     
     //Rendering preparation (Binding & Uniforms)
     defShader.BindShader();
@@ -27,22 +178,37 @@ function DrawScene()
 
     //Rendering
     var i = 0;
-    while(i < meshes_size)
+    while(i < meshesSize)
     {        
-        renderer.DrawMesh(meshes_to_draw[i], defShader);
+        renderer.DrawMesh(DrawMeshes[i], defShader);
         ++i;      
     }
 
     defShader.UnbindShader();
 }
 
+function Update()
+{
+    var d = new Date();
+    var timeMS = d.getTime();
+    time.dt = (timeMS - time.lastTimeMS)/1000.0;
+    time.lastTimeMS = timeMS;
+
+    requestAnimationFrame(Update);
+    ProcessInput();
+    DrawScene();
+}
+
 
 // App's Main Loop
 var mainLoop = function()
 {
+    InitTime();
+
     //Create Renderer & Setup Default Shader
     renderer = new GLRenderer();
     renderer.Init("screen_canvas", "webgl2"); //"experimental-webgl"
+    InitInput();
     renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    
     defShader = renderer.getDefaultShader();
 
@@ -75,13 +241,7 @@ var mainLoop = function()
     //sq2.SetMeshTexture(texture2);
     
     //Draw
-    meshes_to_draw = new Array(tri1, tri2, sq1, sq2);
-    meshes_size = 4;
-    reDraw();
-}
-
-function reDraw()
-{
-    requestAnimationFrame(reDraw);    
-    DrawScene();
+    DrawMeshes = new Array(tri1, tri2, sq1, sq2);
+    meshesSize = 4;
+    Update();
 }
