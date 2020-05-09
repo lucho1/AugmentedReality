@@ -56,6 +56,7 @@ class Mesh
         
         //Graphics
         this.getMeshColor       = function() { return this.#m_Color; }
+        this.getMeshColorVec3   = function() { return [this.#m_Color[0], this.#m_Color[1], this.#m_Color[2]]; }
         this.getMeshTexture     = function() { return this.#m_Texture; }
 
         this.SetMeshColor       = function(col) { this.#m_Color = col; }

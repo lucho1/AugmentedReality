@@ -3,6 +3,7 @@ class Scene
     #m_MeshesToDraw = [];
     #m_MeshesDrawSize = 0;
     #m_SceneObjects;
+    #m_CurrentLight;
 
     constructor()
     {
@@ -76,6 +77,8 @@ class Scene
         var light_cube = this.#m_SceneObjects.get("Light");
         if(light_cube != undefined)
         {
+            this.#m_CurrentLight = light_cube;
+
             var speed = 20.0, angular_speed = 150.0;
             var new_pos = [0.0, 0.0, 0.0];
             var rot = [0.0, 0.0];
@@ -136,6 +139,12 @@ class Scene
         shader.BindShader();
         shader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
         shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
+
+        //Pass Lighting Uniforms
+        this.#m_CurrentLight;
+        shader.SetUniformVec3f("u_LightPos", this.#m_CurrentLight.getPos());
+        shader.SetUniformVec4f("u_LightColor", this.#m_CurrentLight.getMeshColor());
+        shader.SetUniformVec3f("u_ViewPos", mainCamera.getPosition());
 
         //Rendering
         var i = 0;

@@ -149,6 +149,11 @@ class GLShader
         gl.uniform4fv(this.#GetUniformLocation(name), value);
     }
 
+    SetUniformVec3f(name, value)
+    {
+        gl.uniform3fv(this.#GetUniformLocation(name), value);
+    }
+
     SetUniform1i(name, value)
     {
         gl.uniform1i(this.#GetUniformLocation(name), value);
