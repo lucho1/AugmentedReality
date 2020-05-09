@@ -51,8 +51,7 @@ class Scene
             if(name == "Teapot")
             {
                 object.SetScale([0.05, 0.05, 0.05]);
-                object.SetPosition([20.0, 5.0, -15.0]);
-                object.SetMeshColor([0.8, 0.3, 0.0, 1.0]);
+                object.SetPosition([25.0, 5.0, -15.0]);
             }
         }
         else

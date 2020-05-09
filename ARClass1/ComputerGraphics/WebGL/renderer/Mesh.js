@@ -173,6 +173,9 @@ class Mesh
         this.#m_IBOID = gl.createBuffer();
         this.#SetIndexBuffer(this.#m_IBOID, modelData.indices);
 
+        //Put Random Color
+        this.#m_Color = [Math.random(), Math.random(), Math.random(), 1.0];
+
         //Unbind All
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
