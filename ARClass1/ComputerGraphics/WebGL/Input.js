@@ -74,7 +74,7 @@ class Input
         for(var i = 0; i < 10; ++i)
         {
             if(input.mouseButtons[i] == ButtonState.DOWN) input.mouseButtons[i] = ButtonState.PRESSED;
-            if(input.mouseButtons[i] == ButtonState.UP) input.mouseButtons[i] = ButtonState.IDLE;
+            if(input.mouseButtons[i] == ButtonState.UP || input.mouseButtons[i] == ButtonState.SCROLLED) input.mouseButtons[i] = ButtonState.IDLE;
         }
 
         input.mouseDX = 0;

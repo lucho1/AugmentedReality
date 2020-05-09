@@ -1,8 +1,36 @@
+function LoadModel(file, shader, scene)
+{
+    var new_mesh = null;   
+    var request = new XMLHttpRequest();
+    request.open("GET", file);
+    request.onreadystatechange = function()
+    {
+        if(request.readyState == request.DONE) // == 4
+        {
+            if(request.status == 200 && request.response)
+            {
+                new_mesh = new Mesh();
+                new_mesh.handleLoadedModel(JSON.parse(request.responseText), shader);
+                scene.AddMeshToScene(new_mesh);
+            }
+            else
+                console.log("Failed to load " + request.status + " " + request.statusText);
+            //if(request.status == 200 && request.response)
+                //handleLoadedModel(JSON.parse(request.responseText));
+            //else
+                //console.log("Failed to load " + request.status + " " + request.statusText);
+        }
+    }
+        
+    //request.responseType = "arraybuffer";
+    request.send();
+    return new_mesh;
+}
+
 class Mesh
 {
     //Buffers
     #m_VBOID = 0;
-    #m_VerticesNum = 0;
     #m_VertexSize = [0];
 
     #m_IBOID = 0;
@@ -21,7 +49,6 @@ class Mesh
     {        
         //Buffers
         this.getID              = function() { return this.#m_VBOID; }
-        this.getVerticesNumber  = function() { return this.#m_VerticesNum; }
         this.getVertexSize      = function() { return this.#m_VertexSize; }
         this.getIndices         = function() { return this.#m_IBOID; }
         this.getIndicesSize     = function() { return this.#m_IndicesSize; }
@@ -77,14 +104,13 @@ class Mesh
     LoadSquare = function(shader)
     {
         this.#m_VBOID = gl.createBuffer();
-        this.#m_VerticesNum = 4;
         this.#m_VertexSize = [3, 2];
         
         var verts = [
-             1.0, -1.0, 0.0, 1.0, 0.0,  //v5
-             1.0, 1.0, 0.0, 1.0, 1.0,   //v3
-            -1.0, 1.0, 0.0, 0.0, 1.0,   //v1
-            -1.0, -1.0, 0.0, 0.0, 0.0  //v2
+             1.0, -1.0, 0.0, 1.0, 0.0,
+             1.0, 1.0, 0.0, 1.0, 1.0,
+            -1.0, 1.0, 0.0, 0.0, 1.0,
+            -1.0, -1.0, 0.0, 0.0, 0.0
         ];
 
         var indices = [ 0, 1, 3, 3, 2, 1];
@@ -100,13 +126,12 @@ class Mesh
     LoadTriangle = function(shader)
     {
         this.#m_VBOID = gl.createBuffer();
-        this.#m_VerticesNum = 3;
         this.#m_VertexSize = [3, 2];
         
         var verts = [
-             0.0, 1.0, 0.0, 0.5, 1.0,    //v1
-            -1.0, -1.0, 0.0, 0.0, 0.0,   //v2
-             1.0, -1.0, 0.0, 1.0, 0.0    //v3
+             0.0, 1.0, 0.0, 0.5, 1.0,
+            -1.0, -1.0, 0.0, 0.0, 0.0,
+             1.0, -1.0, 0.0, 1.0, 0.0
         ];
         
         var indices = [0, 1, 2];
@@ -116,5 +141,62 @@ class Mesh
         this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt); 
         this.#SetIndexBuffer(this.#m_IBOID, indices);
         return this.#m_VBOID;
+    }
+
+
+    handleLoadedModel(modelData, shader)
+    {
+        //Put Geometry Together
+        var vPos_Arr = modelData.vertexPositions;
+        var tC_Arr = modelData.vertexTextureCoords;
+        var vertices = [];
+
+        var i = 0, j = 0, k = 0;
+        while(i < (vPos_Arr.length + tC_Arr.length))
+        {
+            vertices[i] = vPos_Arr[j];
+            vertices[i+1] = vPos_Arr[j+1];
+            vertices[i+2] = vPos_Arr[j+2];
+            vertices[i+3] = tC_Arr[k];
+            vertices[i+4] = tC_Arr[k+1];
+            i += 5; j += 3; k += 2;
+        }
+        
+        //Setup Vertices (pos + tCoord)
+        this.#m_VertexSize = [3, 2];
+        this.#m_VBOID = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.#m_VBOID);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        
+        gl.vertexAttribPointer(shader.vPosAtt, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(shader.vTCoordAtt, 2, gl.FLOAT, false, 20, 3*4.0);
+        
+        this.#m_IndicesSize = modelData.indices.length;
+        this.#m_IBOID = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.#m_IBOID);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
+
+        //Unbind All
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    }
+
+    CacaDeFuncion(file)
+    {
+        var request = new XMLHttpRequest();
+        request.open("GET", file);
+        request.onreadystatechange = function()
+        {
+            if(request.readyState == request.DONE) // == 4
+            {
+                if(request.status == 200 && request.response)
+                    this.handleLoadedModel(request.responseText);
+                else
+                    console.log("Failed to load " + request.status + " " + request.statusText);
+            }
+        }
+        
+        request.responseType = "arraybuffer";
+        request.send();        
     }
 }

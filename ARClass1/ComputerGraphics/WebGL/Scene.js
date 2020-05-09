@@ -37,6 +37,12 @@ class Scene
         this.#m_MeshesDrawSize = this.#m_MeshesToDraw.length;
     }
 
+    AddMeshToScene = function(mesh)
+    {
+        this.#m_MeshesToDraw.push(mesh);
+        this.#m_MeshesDrawSize++;
+    }
+
     //Draw the Scene
     DrawScene = function(mainCamera, shader, renderer)
     {

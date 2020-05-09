@@ -54,9 +54,17 @@ var mainLoop = function()
     MainScene = new Scene();
     MainScene.LoadGeometry(defShader);
 
+    //var mod = new Mesh();
+    LoadModel("images/Laptop.json", defShader, MainScene);
+    //LoadModel("images/Teapot.json", defShader, MainScene);
+
     //Create Textures for meshes
-    MainScene.getMeshesToDraw()[0].SetMeshTexture(new Texture("images/wall.jpg", "texture1"));
-    //MainScene.getMeshesToDraw()[2].SetMeshTexture(new Texture("images/awesomeface.png", "texture2"));
+    //new Texture("images/awesomeface.png", "texture2")
+    var tex1 = new Texture("images/wall.jpg", "texture1");
+    MainScene.getMeshesToDraw()[0].SetMeshTexture(tex1);
+    MainScene.getMeshesToDraw()[1].SetMeshTexture(tex1);
+    MainScene.getMeshesToDraw()[2].SetMeshTexture(tex1);
+    MainScene.getMeshesToDraw()[3].SetMeshTexture(tex1);
 
     //Finally, Update
     Update();
