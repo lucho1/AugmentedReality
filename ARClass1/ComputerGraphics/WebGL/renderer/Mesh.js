@@ -1,30 +1,23 @@
 function LoadModel(file, shader, scene)
-{
-    var new_mesh = null;   
+{ 
     var request = new XMLHttpRequest();
-    request.open("GET", file);
     request.onreadystatechange = function()
     {
         if(request.readyState == request.DONE) // == 4
         {
             if(request.status == 200 && request.response)
             {
-                new_mesh = new Mesh();
+                var new_mesh = new Mesh();
                 new_mesh.handleLoadedModel(JSON.parse(request.responseText), shader);
                 scene.AddMeshToScene(new_mesh);
             }
             else
-                console.log("Failed to load " + request.status + " " + request.statusText);
-            //if(request.status == 200 && request.response)
-                //handleLoadedModel(JSON.parse(request.responseText));
-            //else
-                //console.log("Failed to load " + request.status + " " + request.statusText);
+            console.log("Failed to load " + request.status + " " + request.statusText);
         }
     }
-        
-    //request.responseType = "arraybuffer";
+    
+    request.open("GET", file);
     request.send();
-    return new_mesh;
 }
 
 class Mesh
@@ -179,24 +172,5 @@ class Mesh
         //Unbind All
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    }
-
-    CacaDeFuncion(file)
-    {
-        var request = new XMLHttpRequest();
-        request.open("GET", file);
-        request.onreadystatechange = function()
-        {
-            if(request.readyState == request.DONE) // == 4
-            {
-                if(request.status == 200 && request.response)
-                    this.handleLoadedModel(request.responseText);
-                else
-                    console.log("Failed to load " + request.status + " " + request.statusText);
-            }
-        }
-        
-        request.responseType = "arraybuffer";
-        request.send();        
     }
 }
