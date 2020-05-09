@@ -49,9 +49,10 @@ class GLRenderer
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh.getID());
 
         var vSize = mesh.getVertexSize();
-        var stride = (vSize[0] + vSize[1]) * 4.0;
-        gl.vertexAttribPointer(shader_bound.vPosAtt, vSize[0], gl.FLOAT, false, stride, 0);        
+        var stride = (vSize[0] + vSize[1] + vSize[2]) * 4.0;
+        gl.vertexAttribPointer(shader_bound.vPosAtt, vSize[0], gl.FLOAT, false, stride, 0);
         gl.vertexAttribPointer(shader_bound.vTCoordAtt, vSize[1], gl.FLOAT, false, stride, vSize[0]*4.0);
+        gl.vertexAttribPointer(shader_bound.vNormsAtt, vSize[2], gl.FLOAT, false, stride, (vSize[0]+vSize[1])*4.0);
         
         shader_bound.SetUniformMat4f("u_ModelMatrix", mesh.getModelMatrix());
         shader_bound.SetUniformVec4f("u_Color", mesh.getMeshColor());   

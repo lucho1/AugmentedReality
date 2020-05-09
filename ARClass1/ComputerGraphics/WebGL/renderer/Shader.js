@@ -69,31 +69,38 @@ class GLShader
     // Create a Shader Program
     CreateShader = function(vertex_shader, fragment_shader)
     {
-       var v_id = this.#CompileShader(vertex_shader);
-       var f_id = this.#CompileShader(fragment_shader);
-       var id = gl.createProgram();
+        //Compile Shaders
+        var v_id = this.#CompileShader(vertex_shader);
+        var f_id = this.#CompileShader(fragment_shader);
+        var id = gl.createProgram();
 
+        //Attach & Link Shaders to ShaderProgram
         gl.attachShader(id, v_id);
         gl.attachShader(id, f_id);
         gl.linkProgram(id);
 
+        //Check for Errors
         if (!gl.getProgramParameter(id, gl.LINK_STATUS))
         {
             alert("Couldn't Link Shader");
             return null;
         }
 
+        //Set Class Variables
         this.#m_VertID = v_id;
         this.#m_FragID = f_id;
         this.#m_ID = id;
         
-        // --- Temporary ---
+        // --- Set Attributes ---
         gl.useProgram(id);
         this.vPosAtt = gl.getAttribLocation(id, "a_Position");
-        gl.enableVertexAttribArray(this.vPosAtt);
-        
+        gl.enableVertexAttribArray(this.vPosAtt);        
         this.vTCoordAtt = gl.getAttribLocation(id, "a_TexCoords");
         gl.enableVertexAttribArray(this.vTCoordAtt);
+        this.vNormsAtt = gl.getAttribLocation(id, "a_Normal");
+        gl.enableVertexAttribArray(this.vNormsAtt);
+
+        //Unbind
         gl.useProgram(null);
     }
 

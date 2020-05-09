@@ -82,14 +82,15 @@ class Mesh
     }
 
     //Mesh Load
-    #SetBuffer = function(id, verts_size, vertices, vPosAttribute, TCoordsAttribute)
+    #SetBuffer = function(id, verts_size, vertices, vPosAttribute, TCoordsAttribute, vNormsAttribute)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER, id);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-        var stride = (verts_size[0] + verts_size[1]) * 4.0;
+        var stride = (verts_size[0] + verts_size[1] + verts_size[2]) * 4.0;
         gl.vertexAttribPointer(vPosAttribute, verts_size[0], gl.FLOAT, false, stride, 0);
         gl.vertexAttribPointer(TCoordsAttribute, verts_size[1], gl.FLOAT, false, stride, verts_size[0]*4.0);
+        gl.vertexAttribPointer(vNormsAttribute, verts_size[2], gl.FLOAT, false, stride, (verts_size[0]+verts_size[1])*4.0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
@@ -105,20 +106,21 @@ class Mesh
     LoadSquare = function(shader)
     {
         this.#m_VBOID = gl.createBuffer();
-        this.#m_VertexSize = [3, 2];
+        this.#m_VertexSize = [3, 2, 3];
         
         var verts = [
-             1.0, -1.0, 0.0, 1.0, 0.0,
-             1.0, 1.0, 0.0, 1.0, 1.0,
-            -1.0, 1.0, 0.0, 0.0, 1.0,
-            -1.0, -1.0, 0.0, 0.0, 0.0
+             //Position         //TCoords   //Normals
+             1.0, -1.0, 0.0,    1.0, 0.0,   0.0, 1.0, 0.0,
+             1.0, 1.0, 0.0,     1.0, 1.0,   0.0, 1.0, 0.0,
+            -1.0, 1.0, 0.0,     0.0, 1.0,   0.0, 1.0, 0.0,
+            -1.0, -1.0, 0.0,    0.0, 0.0,   0.0, 1.0, 0.0
         ];
 
         var indices = [ 0, 1, 3, 3, 2, 1];
         this.#m_IBOID = gl.createBuffer();
         this.#m_IndicesSize = 6;
         
-        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt);
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt, shader.vNormsAtt);
         this.#SetIndexBuffer(this.#m_IBOID, indices);
         return this.#m_VBOID;
     }
@@ -127,19 +129,20 @@ class Mesh
     LoadTriangle = function(shader)
     {
         this.#m_VBOID = gl.createBuffer();
-        this.#m_VertexSize = [3, 2];
+        this.#m_VertexSize = [3, 2, 3];
         
         var verts = [
-             0.0, 1.0, 0.0, 0.5, 1.0,
-            -1.0, -1.0, 0.0, 0.0, 0.0,
-             1.0, -1.0, 0.0, 1.0, 0.0
+             //Position         //TCoords   //Normals
+             0.0, 1.0, 0.0,     0.5, 1.0,   0.0, 1.0, 0.0,
+            -1.0, -1.0, 0.0,    0.0, 0.0,   0.0, 1.0, 0.0,
+             1.0, -1.0, 0.0,    1.0, 0.0,   0.0, 1.0, 0.0
         ];
         
         var indices = [0, 1, 2];
         this.#m_IBOID = gl.createBuffer();
         this.#m_IndicesSize = 3;
 
-        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt); 
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, verts, shader.vPosAtt, shader.vTCoordAtt, shader.vNormsAtt); 
         this.#SetIndexBuffer(this.#m_IBOID, indices);
         return this.#m_VBOID;
     }
@@ -150,23 +153,32 @@ class Mesh
         //Put Geometry Together
         var vPos_Arr = modelData.vertexPositions;
         var tC_Arr = modelData.vertexTextureCoords;
+        var norms_Arr = modelData.vertexNormals;
         var vertices = [];
 
         var i = 0, j = 0, k = 0;
-        while(i < (vPos_Arr.length + tC_Arr.length))
+        while(i < (vPos_Arr.length + tC_Arr.length + norms_Arr.length)) //"Translate" Geometry
         {
+            //Vertex Position
             vertices[i] = vPos_Arr[j];
             vertices[i+1] = vPos_Arr[j+1];
             vertices[i+2] = vPos_Arr[j+2];
+
+            //Vertex Texture Coordinates
             vertices[i+3] = tC_Arr[k];
             vertices[i+4] = tC_Arr[k+1];
-            i += 5; j += 3; k += 2;
+
+            //Vertex Normals
+            vertices[i+5] = norms_Arr[j];
+            vertices[i+6] = norms_Arr[j+1];
+            vertices[i+7] = norms_Arr[j+2];
+            i += 8; j += 3; k += 2;
         }        
         
         //Setup Vertices (pos + tCoord)
-        this.#m_VertexSize = [3, 2];
+        this.#m_VertexSize = [3, 2, 3];
         this.#m_VBOID = gl.createBuffer();
-        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, vertices, shader.vPosAtt, shader.vTCoordAtt);
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, vertices, shader.vPosAtt, shader.vTCoordAtt, shader.vNormsAtt);
         
         //Setup Indices
         this.#m_IndicesSize = modelData.indices.length;
