@@ -1,4 +1,4 @@
-function LoadModel(file, shader, scene)
+function LoadModel(file, shader, scene, name)
 { 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function()
@@ -9,10 +9,10 @@ function LoadModel(file, shader, scene)
             {
                 var new_mesh = new Mesh();
                 new_mesh.SetupGeometry(JSON.parse(request.responseText), shader);
-                scene.AddMeshToScene(new_mesh);
+                scene.AddObjectToScene(new_mesh, name);
             }
             else
-            console.log("Failed to load " + request.status + " " + request.statusText);
+                console.log("Failed to load " + request.status + " " + request.statusText);
         }
     }
     
@@ -31,7 +31,7 @@ class Mesh
     
     //Transformations
     #m_ModelMatrix = mat4.create();
-    #m_Position = [0.0, 0.0, -10.0];
+    #m_Position = [0.0, 0.0, 0.0];
     #m_Orientation = [0.0, 0.0, 0.0];
     #m_Scale = [1.0, 1.0, 1.0];
     

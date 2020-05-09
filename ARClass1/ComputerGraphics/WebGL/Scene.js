@@ -2,9 +2,12 @@ class Scene
 {
     #m_MeshesToDraw = [];
     #m_MeshesDrawSize = 0;
+    #m_SceneObjects;
 
     constructor()
     {
+        this.#m_SceneObjects = new Map();
+        this.getSceneObjects = function() { return this.#m_SceneObjects; }
         this.getMeshesToDraw = function() { return this.#m_MeshesToDraw; }
         this.getMeshesVecSize = function() { return this.#m_MeshesDrawSize; }
     }
@@ -35,6 +38,25 @@ class Scene
 
         this.#m_MeshesToDraw = new Array(tri1, tri2, sq1, sq2);
         this.#m_MeshesDrawSize = this.#m_MeshesToDraw.length;
+    }
+
+    AddObjectToScene = function(object, name)
+    {
+        if(this.#m_SceneObjects.get(name) == undefined)
+        {
+            this.#m_SceneObjects.set(name, object);
+            this.#m_MeshesToDraw.push(object);
+            this.#m_MeshesDrawSize++;
+
+            if(name == "Teapot")
+            {
+                object.SetScale([0.05, 0.05, 0.05]);
+                object.SetPosition([20.0, 5.0, -15.0]);
+                object.SetMeshColor([0.8, 0.3, 0.0, 1.0]);
+            }
+        }
+        else
+            console.log("Object was already in scene");
     }
 
     AddMeshToScene = function(mesh)

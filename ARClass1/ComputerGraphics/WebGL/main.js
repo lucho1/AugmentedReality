@@ -55,8 +55,8 @@ var mainLoop = function()
     MainScene.LoadScene(defShader);
 
     //var mod = new Mesh();
-    LoadModel("images/Laptop.json", defShader, MainScene);
-    //LoadModel("images/Teapot.json", defShader, MainScene);
+    LoadModel("images/Laptop.json", defShader, MainScene, "Laptop");
+    LoadModel("images/Teapot.json", defShader, MainScene, "Teapot");
 
     //Create Textures for meshes
     //new Texture("images/awesomeface.png", "texture2")
