@@ -73,6 +73,13 @@ class Mesh
     {
         var angle = degrees/180*3.1415;
         mat4.rotate(this.#m_ModelMatrix, angle, axis);
+
+        if(axis[0] == 1.0)
+            this.#m_Orientation[0] = degrees;
+        if(axis[1] == 1.0)
+            this.#m_Orientation[1] = degrees;
+        if(axis[2] == 1.0)
+            this.#m_Orientation[2] = degrees;
     }
 
     SetScale = function(scale)
@@ -81,7 +88,7 @@ class Mesh
         mat4.scale(this.#m_ModelMatrix, scale);
     }
 
-    //Mesh Load
+    //Mesh Buffer Setup
     #SetBuffer = function(id, verts_size, vertices, vPosAttribute, TCoordsAttribute, vNormsAttribute)
     {
         gl.bindBuffer(gl.ARRAY_BUFFER, id);
@@ -95,6 +102,7 @@ class Mesh
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
     }
 
+    //Mesh Index Buffer Setup
     #SetIndexBuffer = function(id, indices)
     {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, id);
@@ -147,7 +155,44 @@ class Mesh
         return this.#m_VBOID;
     }
 
+    // Load a Sphere with its buffer
+    LoadCube = function(shader)
+    {
+        var vertices =
+        [
+             //Position         //TCoords   //Normals
+            -1.0, -1.0, -1.0,   0.0, 0.0,   -0.5, -0.5, -0.5,
+             1.0, -1.0, -1.0,   1.0, 0.0,    0.5, -0.5, -0.5,
+             1.0,  1.0, -1.0,   1.0, 1.0,    0.5,  0.5, -0.5,
+            -1.0,  1.0, -1.0,   0.0, 1.0,   -0.5,  0.5, -0.5,
+            -1.0, -1.0,  1.0,   0.0, 0.0,   -0.5, -0.5,  0.5,
+             1.0, -1.0,  1.0,   1.0, 0.0,    0.5, -0.5,  0.5,
+             1.0,  1.0,  1.0,   1.0, 1.0,    0.5,  0.5,  0.5,
+            -1.0,  1.0,  1.0,   0.0, 1.0,   -0.5,  0.5,  0.5
+        ];
 
+        var indices =
+        [
+            0, 1, 3, 3, 1, 2,
+            1, 5, 2, 2, 5, 6,
+            5, 4, 6, 6, 4, 7,
+            4, 0, 7, 7, 0, 3,
+            3, 2, 7, 7, 2, 6,
+            4, 5, 0, 0, 5, 1
+        ];
+
+        //Setup Vertices (pos + tCoord)
+        this.#m_VertexSize = [3, 2, 3];
+        this.#m_VBOID = gl.createBuffer();
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, vertices, shader.vPosAtt, shader.vTCoordAtt, shader.vNormsAtt);
+        
+        //Setup Indices
+        this.#m_IndicesSize = indices.length;
+        this.#m_IBOID = gl.createBuffer();
+        this.#SetIndexBuffer(this.#m_IBOID, indices);
+    }
+
+    //To Load External Meshes, a Geometry-setup
     SetupGeometry(modelData, shader)
     {
         //Put Geometry Together

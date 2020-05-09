@@ -27,6 +27,7 @@ function Update()
 
     requestAnimationFrame(Update);
     MainCamera.MoveCamera(time.dt);
+    MainScene.UpdateScene(time.dt);
     MainScene.DrawScene(MainCamera, defShader, Renderer);
     AppInput.ResetInput();
 }

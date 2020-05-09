@@ -36,7 +36,14 @@ class Scene
         sq2.SetMeshColor([1.0, 1.0, 0.5, 1.0]);
         sq2.SetRotation(45, [0.0, 0.0, 1.0]);
 
-        this.#m_MeshesToDraw = new Array(tri1, tri2, sq1, sq2);
+        var cube = new Mesh();
+        cube.LoadCube(shader);
+        cube.SetPosition([0.0, 0.0, -2.0]);
+        cube.SetMeshColor([1.0, 1.0, 1.0, 1.0]);
+        cube.SetScale([0.2, 0.2, 0.2]);
+        this.#m_SceneObjects.set("Light", cube);
+
+        this.#m_MeshesToDraw = new Array(tri1, tri2, sq1, sq2, cube);
         this.#m_MeshesDrawSize = this.#m_MeshesToDraw.length;
     }
 
@@ -62,6 +69,45 @@ class Scene
     {
         this.#m_MeshesToDraw.push(mesh);
         this.#m_MeshesDrawSize++;
+    }
+
+    UpdateScene(dt)
+    {
+        var light_cube = this.#m_SceneObjects.get("Light");
+        if(light_cube != undefined)
+        {
+            var speed = 20.0, angular_speed = 150.0;
+            var new_pos = [0.0, 0.0, 0.0];
+            var rot = [0.0, 0.0];
+
+            //Process Keyboard
+            if(input.keys[16] == ButtonState.PRESSED) //SHIFT == double speed
+            {
+                speed *= 2.0;
+                angular_speed *= 2.0;
+            }
+            
+            if(input.keys[73] == ButtonState.PRESSED) //I
+                new_pos[2] -= speed * dt;
+            if(input.keys[75] == ButtonState.PRESSED) //K
+                new_pos[2] += speed * dt;
+            if(input.keys[74] == ButtonState.PRESSED) //J
+                new_pos[0] -= speed * dt;
+            if(input.keys[76] == ButtonState.PRESSED) //L
+                new_pos[0] += speed * dt;
+            if(input.keys[79] == ButtonState.PRESSED) //O
+                new_pos[1] += speed * dt;
+            if(input.keys[85] == ButtonState.PRESSED) //U
+                new_pos[1] -= speed * dt;
+            if(input.keys[89] == ButtonState.PRESSED) //Y (Rot Pitch)
+                rot[0] += angular_speed * dt;
+            if(input.keys[72] == ButtonState.PRESSED) //H (Rot Yaw)
+                rot[1] += angular_speed * dt;
+            
+            this.#m_SceneObjects.get("Light").SetPosition(new_pos);
+            this.#m_SceneObjects.get("Light").SetRotation(rot[0], [1.0, 0.0, 0.0]);
+            this.#m_SceneObjects.get("Light").SetRotation(rot[1], [0.0, 1.0, 0.0]);
+        }
     }
 
     //Draw the Scene
