@@ -153,21 +153,17 @@ class Mesh
             vertices[i+3] = tC_Arr[k];
             vertices[i+4] = tC_Arr[k+1];
             i += 5; j += 3; k += 2;
-        }
+        }        
         
         //Setup Vertices (pos + tCoord)
         this.#m_VertexSize = [3, 2];
         this.#m_VBOID = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.#m_VBOID);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        this.#SetBuffer(this.#m_VBOID, this.#m_VertexSize, vertices, shader.vPosAtt, shader.vTCoordAtt);
         
-        gl.vertexAttribPointer(shader.vPosAtt, 3, gl.FLOAT, false, 0, 0);
-        gl.vertexAttribPointer(shader.vTCoordAtt, 2, gl.FLOAT, false, 20, 3*4.0);
-        
+        //Setup Indices
         this.#m_IndicesSize = modelData.indices.length;
         this.#m_IBOID = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.#m_IBOID);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
+        this.#SetIndexBuffer(this.#m_IBOID, modelData.indices);
 
         //Unbind All
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
