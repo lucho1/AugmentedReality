@@ -52,7 +52,7 @@ var mainLoop = function()
 
     //Setup Main Scene
     MainScene = new Scene();
-    MainScene.LoadGeometry(defShader);
+    MainScene.LoadScene(defShader);
 
     //var mod = new Mesh();
     LoadModel("images/Laptop.json", defShader, MainScene);

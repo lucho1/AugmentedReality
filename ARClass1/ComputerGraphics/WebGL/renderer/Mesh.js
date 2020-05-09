@@ -8,7 +8,7 @@ function LoadModel(file, shader, scene)
             if(request.status == 200 && request.response)
             {
                 var new_mesh = new Mesh();
-                new_mesh.handleLoadedModel(JSON.parse(request.responseText), shader);
+                new_mesh.SetupGeometry(JSON.parse(request.responseText), shader);
                 scene.AddMeshToScene(new_mesh);
             }
             else
@@ -33,6 +33,7 @@ class Mesh
     #m_ModelMatrix = mat4.create();
     #m_Position = [0.0, 0.0, -10.0];
     #m_Orientation = [0.0, 0.0, 0.0];
+    #m_Scale = [1.0, 1.0, 1.0];
     
     //Graphics
     #m_Color = [1.0, 1.0, 1.0, 1.0];
@@ -51,6 +52,7 @@ class Mesh
         this.getModelMatrix     = function() { return this.#m_ModelMatrix; }
         this.getPos             = function() { return this.#m_Position; }
         this.getOrientation     = function() { return this.#m_Orientation; }
+        this.getScale           = function() { return this.#m_Scale; }
         
         //Graphics
         this.getMeshColor       = function() { return this.#m_Color; }
@@ -71,6 +73,12 @@ class Mesh
     {
         var angle = degrees/180*3.1415;
         mat4.rotate(this.#m_ModelMatrix, angle, axis);
+    }
+
+    SetScale = function(scale)
+    {
+        this.#m_Scale = scale;
+        mat4.scale(this.#m_ModelMatrix, scale);
     }
 
     //Mesh Load
@@ -137,7 +145,7 @@ class Mesh
     }
 
 
-    handleLoadedModel(modelData, shader)
+    SetupGeometry(modelData, shader)
     {
         //Put Geometry Together
         var vPos_Arr = modelData.vertexPositions;

@@ -10,7 +10,7 @@ class Scene
     }
 
     //Load the Scene
-    LoadGeometry = function(shader)
+    LoadScene = function(shader)
     {
         var tri1 = new Mesh();
         tri1.LoadTriangle(shader);
