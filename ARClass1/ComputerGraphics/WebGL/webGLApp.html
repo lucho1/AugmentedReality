@@ -74,12 +74,18 @@
 
             vec4 CalculateLight(vec3 normalVec, vec3 LDir, vec3 LPos, vec4 LColor)
             {
+                vec3 viewDir = normalize(u_ViewPos - v_FragPos);
                 float diffComp = max(dot(normalVec, LDir), 0.0);
                 vec4 diffuse = diffComp * LColor;
+                
+                //Phong
+                //vec3 reflectDir = reflect(-LDir, normalVec);
+                //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 
-                vec3 viewDir = normalize(u_ViewPos - v_FragPos);
-                vec3 reflectDir = reflect(-LDir, normalVec);
-                float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+                //Blinn-Phong
+                vec3 halfwayDir = normalize(LDir + viewDir);
+                float spec = pow(max(dot(normalVec, halfwayDir), 0.0), 16.0);    
+                
                 vec4 specular = spec * LColor;
 
                 //float d = length(LPos - v_FragPos);
