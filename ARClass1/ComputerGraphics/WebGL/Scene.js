@@ -3,7 +3,7 @@ class Scene
     #m_MeshesToDraw = [];
     #m_MeshesDrawSize = 0;
     #m_SceneObjects;
-    #m_CurrentLight;
+    //#m_CurrentLight;
 
     constructor()
     {
@@ -59,8 +59,10 @@ class Scene
             if(name == "Teapot")
             {
                 object.SetScale([0.05, 0.05, 0.05]);
-                object.SetPosition([25.0, 5.0, -15.0]);
+                object.SetPosition([25.0, 0.0, 0.0]);
             }
+            else
+                object.SetPosition([0.0, 0.0, 0.0]);
         }
         else
             console.log("Object was already in scene");
@@ -74,43 +76,45 @@ class Scene
 
     UpdateScene(dt)
     {
-        var light_cube = this.#m_SceneObjects.get("Light");
-        if(light_cube != undefined)
-        {
-            this.#m_CurrentLight = light_cube;
+        //var light_cube = this.#m_SceneObjects.get("Light");
+        //if(light_cube != undefined)
+        //{
+            //this.#m_CurrentLight = light_cube;
 
-            var speed = 20.0, angular_speed = 150.0;
-            var new_pos = [0.0, 0.0, 0.0];
-            var rot = [0.0, 0.0];
+            //var speed = 20.0, angular_speed = 150.0;
+            //var new_pos = [0.0, 0.0, 0.0];
+            //var rot = [0.0, 0.0];
 
-            //Process Keyboard
-            if(input.keys[16] == ButtonState.PRESSED) //SHIFT == double speed
-            {
-                speed *= 2.0;
-                angular_speed *= 2.0;
-            }
+            //Process Keyboard to move light
+            //if(input.keys[16] == ButtonState.PRESSED) //SHIFT == double speed
+            //{
+            //    speed *= 2.0;
+            //    angular_speed *= 2.0;
+            //}
             
-            if(input.keys[73] == ButtonState.PRESSED) //I
-                new_pos[2] -= speed * dt;
-            if(input.keys[75] == ButtonState.PRESSED) //K
-                new_pos[2] += speed * dt;
-            if(input.keys[74] == ButtonState.PRESSED) //J
-                new_pos[0] -= speed * dt;
-            if(input.keys[76] == ButtonState.PRESSED) //L
-                new_pos[0] += speed * dt;
-            if(input.keys[79] == ButtonState.PRESSED) //O
-                new_pos[1] += speed * dt;
-            if(input.keys[85] == ButtonState.PRESSED) //U
-                new_pos[1] -= speed * dt;
-            if(input.keys[89] == ButtonState.PRESSED) //Y (Rot Pitch)
-                rot[0] += angular_speed * dt;
-            if(input.keys[72] == ButtonState.PRESSED) //H (Rot Yaw)
-                rot[1] += angular_speed * dt;
+            //if(input.keys[73] == ButtonState.PRESSED) //I
+            //    new_pos[2] -= speed * dt;
+            //if(input.keys[75] == ButtonState.PRESSED) //K
+            //    new_pos[2] += speed * dt;
+            //if(input.keys[74] == ButtonState.PRESSED) //J
+            //    new_pos[0] -= speed * dt;
+            //if(input.keys[76] == ButtonState.PRESSED) //L
+            //    new_pos[0] += speed * dt;
+            //if(input.keys[79] == ButtonState.PRESSED) //O
+            //    new_pos[1] += speed * dt;
+            //if(input.keys[85] == ButtonState.PRESSED) //U
+            //    new_pos[1] -= speed * dt;
+            //if(input.keys[89] == ButtonState.PRESSED) //Y (Rot Pitch)
+            //    rot[0] += angular_speed * dt;
+            //if(input.keys[72] == ButtonState.PRESSED) //H (Rot Yaw)
+            //    rot[1] += angular_speed * dt;
             
-            this.#m_SceneObjects.get("Light").SetPosition(new_pos);
-            this.#m_SceneObjects.get("Light").SetRotation(rot[0], [1.0, 0.0, 0.0]);
-            this.#m_SceneObjects.get("Light").SetRotation(rot[1], [0.0, 1.0, 0.0]);
-        }
+            //if(new_pos[0] > 0.0 || new_pos[1] > 0.0 || new_pos[2] > 0.0 || new_pos[0] < 0.0 || new_pos[1] < 0.0 || new_pos[2] < 0.0)
+            //    this.#m_SceneObjects.get("Light").SetPosition(new_pos);
+
+            //this.#m_SceneObjects.get("Light").SetRotation(rot[0], [1.0, 0.0, 0.0]);
+            //this.#m_SceneObjects.get("Light").SetRotation(rot[1], [0.0, 1.0, 0.0]);
+        //}
     }
 
     //Draw the Scene
@@ -141,9 +145,12 @@ class Scene
         shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
 
         //Pass Lighting Uniforms
-        this.#m_CurrentLight;
-        shader.SetUniformVec3f("u_LightPos", this.#m_CurrentLight.getPos());
-        shader.SetUniformVec4f("u_LightColor", this.#m_CurrentLight.getMeshColor());
+        var light_cube = this.#m_SceneObjects.get("Light");
+        //if(light_cube != undefined)
+        //    this.#m_CurrentLight = light_cube;
+
+        //shader.SetUniformVec3f("u_LightPos", light_cube.getPos());
+        //shader.SetUniformVec4f("u_LightColor", light_cube.getMeshColor());
         shader.SetUniformVec3f("u_ViewPos", mainCamera.getPosition());
 
         //Rendering
