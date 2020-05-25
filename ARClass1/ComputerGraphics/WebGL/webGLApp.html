@@ -15,17 +15,60 @@
         <script type="text/javascript" src="renderer/Shader.js"></script>        
         <script type="text/javascript" src="renderer/Texture.js"></script>
         <script type="text/javascript" src="renderer/Mesh.js"></script> 
-
+        
         <!-- Modules -->
         <script type="text/javascript" src="renderer/Renderer.js"></script>
         <script type="text/javascript" src="Camera.js"></script>
         <script type="text/javascript" src="Scene.js"></script>
-
+        
         <!-- Main -->
         <script type="text/javascript" src="Input.js"></script>
         <script type="text/javascript" src="Main.js"></script>
 
-        <!-- Shaders -->
+        <!-- SHADERS -->
+        <!-- Shadows -->
+        <script id="ShadowsVertexShader" type="x-shader/x-vertex">#version 300 es
+            in vec3 a_Position;
+            //in vec2 a_TexCoords;
+            //in vec3 a_Normal;
+
+            uniform mat4 u_ProjMatrix;
+            uniform mat4 u_ViewMatrix;
+            uniform mat4 u_ModelMatrix;
+
+            //out vec2 v_TexCoords;
+            //out vec3 v_Normal;
+
+            void main()
+            {
+                //v_TexCoords = a_TexCoords;
+                //v_Normal = a_Normal;
+                gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);
+            }
+        </script>
+        <script id="ShadowsFragmentShader" type="x-shader/x-fragment">#version 300 es
+            precision mediump float;
+            //in vec2 v_TexCoords;
+            //in vec3 v_Normal;
+            out vec4 fragColor;
+
+            vec4 encodeFloat(float depth)
+            {
+                const vec4 bitShift = vec4(256*256*256, 256*256, 256, 1.0);
+                const vec4 bitMask = vec4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
+                vec4 comp = fract(depth * bitShift);
+                comp -= comp.xxyz * bitMask;
+                return comp;
+            }
+
+            void main(void)
+            {
+                fragColor = encodeFloat(gl_FragCoord.z);
+                fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        </script>
+
+        <!-- Default -->
         <script id="DefaultVertexShader" type="x-shader/x-vertex">#version 300 es
             in vec3 a_Position;
             in vec2 a_TexCoords;

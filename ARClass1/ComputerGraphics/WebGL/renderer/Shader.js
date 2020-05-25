@@ -7,11 +7,11 @@ class GLShader
     #m_UniformLocCache;
 
     // --- Constructor ---
-    constructor(name, vertex_shader, fragment_shader)
+    constructor(name, vertex_shader, fragment_shader, vAtts)
     {
         this.#m_Name = name;
         this.#m_UniformLocCache = new Map();
-        this.CreateShader(vertex_shader, fragment_shader);
+        this.CreateShader(vertex_shader, fragment_shader, vAtts);
         
         this.getName = function() { return this.#m_Name; }
         this.getID = function() { return this.#m_ID; }
@@ -67,7 +67,7 @@ class GLShader
     }
 
     // Create a Shader Program
-    CreateShader = function(vertex_shader, fragment_shader)
+    CreateShader = function(vertex_shader, fragment_shader, vAtts)
     {
         //Compile Shaders
         var v_id = this.#CompileShader(vertex_shader);
@@ -93,12 +93,22 @@ class GLShader
         
         // --- Set Attributes ---
         gl.useProgram(id);
-        this.vPosAtt = gl.getAttribLocation(id, "a_Position");
-        gl.enableVertexAttribArray(this.vPosAtt);        
-        this.vTCoordAtt = gl.getAttribLocation(id, "a_TexCoords");
-        gl.enableVertexAttribArray(this.vTCoordAtt);
-        this.vNormsAtt = gl.getAttribLocation(id, "a_Normal");
-        gl.enableVertexAttribArray(this.vNormsAtt);
+
+        if(vAtts[0] == true)
+        {
+            this.vPosAtt = gl.getAttribLocation(id, "a_Position");
+            gl.enableVertexAttribArray(this.vPosAtt);
+        }
+        if(vAtts[1] == true)
+        {
+            this.vTCoordAtt = gl.getAttribLocation(id, "a_TexCoords");
+            gl.enableVertexAttribArray(this.vTCoordAtt);
+        }
+        if(vAtts[2] == true)
+        {
+            this.vNormsAtt = gl.getAttribLocation(id, "a_Normal");
+            gl.enableVertexAttribArray(this.vNormsAtt);
+        }
 
         //Unbind
         gl.useProgram(null);

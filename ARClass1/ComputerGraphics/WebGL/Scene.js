@@ -4,6 +4,7 @@ class Scene
     #m_MeshesDrawSize = 0;
     #m_SceneObjects;
     //#m_CurrentLight;
+    #m_DepthFBO = 0;
 
     constructor()
     {
@@ -11,6 +12,8 @@ class Scene
         this.getSceneObjects = function() { return this.#m_SceneObjects; }
         this.getMeshesToDraw = function() { return this.#m_MeshesToDraw; }
         this.getMeshesVecSize = function() { return this.#m_MeshesDrawSize; }
+
+        this.#CreateFrameBuffer();
     }
 
     //Load the Scene
@@ -117,6 +120,71 @@ class Scene
         //}
     }
 
+    //Create FBO
+    #CreateFrameBuffer = function()
+    {
+        var rttTexture;
+        this.#m_DepthFBO = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.#m_DepthFBO);
+        this.#m_DepthFBO.width = 2048;
+        this.#m_DepthFBO.height = 2048;
+
+        rttTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, rttTexture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.#m_DepthFBO.width, this.#m_DepthFBO.height,
+            0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+        var renderbuffer = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.#m_DepthFBO.width, this.#m_DepthFBO.height);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, rttTexture, 0);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+    
+        gl.bindTexture(gl.TEXTURE_2D, null),
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+
+    //Draw the scene's shadowmap (render from light)
+    DrawShadowMap = function(mainCamera, shader, renderer)
+    {
+        //gl.enable(gl.DEPTH_TEST);
+        var espia = this.#m_DepthFBO;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.#m_DepthFBO);
+        gl.viewport(0, 0, this.#m_DepthFBO.width, this.#m_DepthFBO.height);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        //Matrices
+        var pMatrix = mat4.create();
+        var mvMatrix = mat4.create();
+        mat4.identity(mvMatrix);
+        mat4.perspective(60, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+        //Camera Move
+        var cameraPos = vec3.create(mainCamera.getPosition());
+        mat4.translate(mvMatrix, vec3.negate(cameraPos));
+        mat4.rotate(mvMatrix, mainCamera.getXRotation(), [1.0, 0.0, 0.0]);
+        mat4.rotate(mvMatrix, mainCamera.getYRotation(), [0.0, 1.0, 0.0]);
+
+        //Shader Uniforms
+        shader.BindShader();
+        shader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
+        shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
+
+        //Rendering
+        var i = 0;
+        while(i < this.#m_MeshesDrawSize)
+        {        
+            renderer.DrawMesh(this.#m_MeshesToDraw[i], shader, true);
+            ++i;      
+        }
+
+        shader.UnbindShader();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+
     //Draw the Scene
     DrawScene = function(mainCamera, shader, renderer)
     {
@@ -145,7 +213,7 @@ class Scene
         shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
 
         //Pass Lighting Uniforms
-        var light_cube = this.#m_SceneObjects.get("Light");
+        //var light_cube = this.#m_SceneObjects.get("Light");
         //if(light_cube != undefined)
         //    this.#m_CurrentLight = light_cube;
 
@@ -157,7 +225,7 @@ class Scene
         var i = 0;
         while(i < this.#m_MeshesDrawSize)
         {        
-            renderer.DrawMesh(this.#m_MeshesToDraw[i], shader);
+            renderer.DrawMesh(this.#m_MeshesToDraw[i], shader, false);
             ++i;      
         }
 

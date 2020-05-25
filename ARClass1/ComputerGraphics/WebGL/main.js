@@ -1,7 +1,7 @@
 //Global variables
 var gl;
 var Renderer, AppInput, MainCamera, MainScene;
-var defShader;
+var defShader, shadowsShader;
 
 //Global Const Variables
 const PI = 3.14159265359
@@ -28,6 +28,7 @@ function Update()
     requestAnimationFrame(Update);
     MainCamera.MoveCamera(time.dt);
     MainScene.UpdateScene(time.dt);
+    //MainScene.DrawShadowMap(MainCamera, shadowsShader, Renderer);
     MainScene.DrawScene(MainCamera, defShader, Renderer);
     AppInput.ResetInput();
 }
@@ -47,9 +48,11 @@ var mainLoop = function()
     AppInput = new Input();
     MainCamera = new Camera();
 
-    //Setup Default Shader
-    Renderer.CreateDefaultShader("DefaultVertexShader", "DefaultFragmentShader");    
-    defShader = Renderer.getDefaultShader();
+    //Setup Shaders
+    var vAttDef = new Array(true, true, true);
+    var vAttSh = new Array(true, false, false);    
+    defShader = Renderer.CreateShader("DefaultVertexShader", "DefaultFragmentShader", "Default Shader", vAttDef);
+    shadowsShader = Renderer.CreateShader("ShadowsVertexShader", "ShadowsFragmentShader", "Shadows Shader", vAttSh);
 
     //Setup Main Scene
     MainScene = new Scene();
