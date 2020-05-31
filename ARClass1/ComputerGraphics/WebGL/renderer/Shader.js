@@ -11,7 +11,7 @@ class GLShader
     {
         this.#m_Name = name;
         this.#m_UniformLocCache = new Map();
-        this.CreateShader(vertex_shader, fragment_shader, vAtts);
+        this.#CreateShader(vertex_shader, fragment_shader, vAtts);
         
         this.getName = function() { return this.#m_Name; }
         this.getID = function() { return this.#m_ID; }
@@ -67,7 +67,7 @@ class GLShader
     }
 
     // Create a Shader Program
-    CreateShader = function(vertex_shader, fragment_shader, vAtts)
+    #CreateShader = function(vertex_shader, fragment_shader, vAtts)
     {
         //Compile Shaders
         var v_id = this.#CompileShader(vertex_shader);
@@ -166,6 +166,7 @@ class GLShader
 
     SetUniform1i(name, value)
     {
+        var loc = this.#GetUniformLocation(name);
         gl.uniform1i(this.#GetUniformLocation(name), value);
     }
 }

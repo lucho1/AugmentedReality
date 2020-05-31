@@ -28,7 +28,7 @@ function Update()
     requestAnimationFrame(Update);
     MainCamera.MoveCamera(time.dt);
     MainScene.UpdateScene(time.dt);
-    //MainScene.DrawShadowMap(MainCamera, shadowsShader, Renderer);
+    MainScene.DrawShadowMap(MainCamera, shadowsShader, Renderer);
     MainScene.DrawScene(MainCamera, defShader, Renderer);
     AppInput.ResetInput();
 }
@@ -56,7 +56,7 @@ var mainLoop = function()
 
     //Setup Main Scene
     MainScene = new Scene();
-    MainScene.LoadScene(defShader);
+    MainScene.LoadScene(defShader, shadowsShader);
 
     //var mod = new Mesh();
     LoadModel("images/Laptop.json", defShader, MainScene, "Laptop");

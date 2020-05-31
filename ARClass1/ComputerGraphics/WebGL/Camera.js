@@ -32,7 +32,7 @@ class Camera
             this.#m_Pos[1] += speed * dt;
         if(input.keys[81] == ButtonState.PRESSED) //Q
             this.#m_Pos[1] -= speed * dt;
-        if(input.keys[70] == ButtonState.PRESSED) //F
+        if(input.keys[82] == ButtonState.PRESSED) //R
             this.#ResetCameraTransform();
 
         //Process Mouse
