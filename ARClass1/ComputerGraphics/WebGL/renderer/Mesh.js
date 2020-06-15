@@ -1,4 +1,4 @@
-function LoadModel(file, shader, scene, name, scale, pos)
+function LoadModel(file, shader, scene, name, scale, pos, rot, col, shininess)
 { 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function()
@@ -8,8 +8,8 @@ function LoadModel(file, shader, scene, name, scale, pos)
             if(request.status == 200 && request.response)
             {
                 var new_mesh = new Mesh();
-                new_mesh.SetupGeometry(JSON.parse(request.responseText), shader);
-                scene.AddObjectToScene(new_mesh, name, scale, pos);
+                new_mesh.SetupGeometry(JSON.parse(request.responseText), shader, col, shininess);
+                scene.AddObjectToScene(new_mesh, name, scale, pos, rot);
             }
             else
                 console.log("Failed to load " + request.status + " " + request.statusText);
@@ -38,6 +38,7 @@ class Mesh
     //Graphics
     #m_Color = [1.0, 1.0, 1.0, 1.0];
     #m_Texture = null;
+    m_Shininess = 16.0;
 
     constructor()
     {        
@@ -72,15 +73,18 @@ class Mesh
 
     SetRotation = function(degrees, axis)
     {
-        var angle = degrees/180*3.1415;
-        mat4.rotate(this.#m_ModelMatrix, angle, axis);
+        if(degrees != 0.0)
+        {
+            var angle = degrees/180*3.1415;
+            mat4.rotate(this.#m_ModelMatrix, angle, axis);
 
-        if(axis[0] == 1.0)
-            this.#m_Orientation[0] = degrees;
-        if(axis[1] == 1.0)
-            this.#m_Orientation[1] = degrees;
-        if(axis[2] == 1.0)
-            this.#m_Orientation[2] = degrees;
+            if(axis[0] == 1.0)
+                this.#m_Orientation[0] = degrees;
+            if(axis[1] == 1.0)
+                this.#m_Orientation[1] = degrees;
+            if(axis[2] == 1.0)
+                this.#m_Orientation[2] = degrees;
+        }
     }
 
     SetScale = function(scale)
@@ -194,7 +198,7 @@ class Mesh
     }
 
     //To Load External Meshes, a Geometry-setup
-    SetupGeometry(modelData, shader)
+    SetupGeometry(modelData, shader, color, shininess)
     {
         //Put Geometry Together
         var vPos_Arr = modelData.vertexPositions;
@@ -230,9 +234,13 @@ class Mesh
         this.#m_IndicesSize = modelData.indices.length;
         this.#m_IBOID = gl.createBuffer();
         this.#SetIndexBuffer(this.#m_IBOID, modelData.indices);
+        this.m_Shininess = shininess;
 
-        //Put Random Color
-        this.#m_Color = [Math.random(), Math.random(), Math.random(), 1.0];
+        //Put Color
+        if(color != undefined)
+            this.#m_Color = [color[0], color[1], color[2], 1.0];
+        else
+            this.#m_Color = [Math.random(), Math.random(), Math.random(), 1.0];
 
         //Unbind All
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);

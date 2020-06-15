@@ -55,7 +55,8 @@ class GLRenderer
         gl.vertexAttribPointer(shader_bound.vNormsAtt, vSize[2], gl.FLOAT, false, stride, (vSize[0]+vSize[1])*4.0);
         
         shader_bound.SetUniformMat4f("u_ModelMatrix", mesh.getModelMatrix());
-        shader_bound.SetUniformVec4f("u_Color", mesh.getMeshColor());   
+        shader_bound.SetUniformVec4f("u_Color", mesh.getMeshColor());
+        shader_bound.SetUniform1f("u_Shininess", mesh.m_Shininess);
         shader_bound.SetUniform1i("u_UseTextures", 0);
 
         if(mesh.getMeshTexture() != null)

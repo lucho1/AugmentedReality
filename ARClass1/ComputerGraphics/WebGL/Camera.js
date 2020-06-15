@@ -6,6 +6,7 @@ class Camera
 
     constructor()
     {
+        this.SetPosition = function(pos) { pos = this.#m_Pos; }
         this.getPosition = function() { return this.#m_Pos; }
         this.getXRotation = function() { return this.#m_Pitch; }
         this.getYRotation = function() { return this.#m_Yaw; }

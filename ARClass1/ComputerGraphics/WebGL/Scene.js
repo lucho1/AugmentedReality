@@ -39,16 +39,17 @@ class Scene
 
         var cube = new Mesh();
         cube.LoadCube(shader);
-        cube.SetPosition([0.0, 0.0, -2.0]);
+        cube.SetPosition([0.0, 50.0, 10.0]);
         cube.SetMeshColor([1.0, 1.0, 1.0, 1.0]);
         cube.SetScale([0.2, 0.2, 0.2]);
         this.#m_SceneObjects.set("Light", cube);
 
-        this.#m_MeshesToDraw = new Array(tri1, tri2, sq1, sq2, cube);
+        //this.#m_MeshesToDraw = new Array(tri1, tri2, sq1, sq2, cube);
+        this.#m_MeshesToDraw = new Array();
         this.#m_MeshesDrawSize = this.#m_MeshesToDraw.length;
     }
 
-    AddObjectToScene = function(object, name, scale, pos)
+    AddObjectToScene = function(object, name, scale, pos, rot)
     {
         if(this.#m_SceneObjects.get(name) == undefined)
         {
@@ -58,6 +59,7 @@ class Scene
 
             object.SetScale(scale);
             object.SetPosition(pos);
+            //object.SetRotation(rot, [1.0, 0.0, 0.0]);
         }
         else
             console.log("Object was already in scene");
@@ -126,7 +128,7 @@ class Scene
         var mvMatrix = mat4.create();
 
         mat4.identity(mvMatrix);
-        mat4.perspective(60, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+        mat4.perspective(60, gl.viewportWidth/gl.viewportHeight, 0.1, 10000.0, pMatrix);
 
         //Camera Move
         var cameraPos = vec3.create(mainCamera.getPosition());
@@ -138,15 +140,18 @@ class Scene
         shader.BindShader();
         shader.SetUniformMat4f("u_ProjMatrix", pMatrix);    
         shader.SetUniformMat4f("u_ViewMatrix", mvMatrix);
+        shader.SetUniformVec3f("u_ViewPos", mainCamera.getPosition());
 
         //Pass Lighting Uniforms
-        var light_cube = this.#m_SceneObjects.get("Light");
+        //var light_cube = this.#m_SceneObjects.get("Light");
         //if(light_cube != undefined)
         //    this.#m_CurrentLight = light_cube;
 
         //shader.SetUniformVec3f("u_LightPos", light_cube.getPos());
         //shader.SetUniformVec4f("u_LightColor", light_cube.getMeshColor());
-        shader.SetUniformVec3f("u_ViewPos", mainCamera.getPosition());
+
+        if(this.#m_SceneObjects.get("RoofTeapot") != undefined)
+            this.#m_SceneObjects.get("RoofTeapot").SetRotation(2.0, [0.0, 1.0, 0.0]);
 
         //Rendering
         var i = 0;

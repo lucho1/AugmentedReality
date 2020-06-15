@@ -158,4 +158,9 @@ class GLShader
     {
         gl.uniform1i(this.#GetUniformLocation(name), value);
     }
+
+    SetUniform1f(name, value)
+    {
+        gl.uniform1f(this.#GetUniformLocation(name), value);
+    }
 }
