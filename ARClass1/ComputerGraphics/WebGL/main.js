@@ -56,8 +56,26 @@ var mainLoop = function()
     MainScene.LoadScene(defShader);
 
     //var mod = new Mesh();
-    LoadModel("images/Laptop.json", defShader, MainScene, "Laptop");
-    LoadModel("images/Teapot.json", defShader, MainScene, "Teapot");
+    var defScale = [1.0, 1.0, 1.0];
+    var position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+
+    LoadModel("images/Laptop.json", defShader, MainScene, "Laptop", defScale, position);
+    LoadModel("images/Teapot.json", defShader, MainScene, "Teapot", [0.05, 0.05, 0.05], [25.0, 0.0, 0.0]);
+
+    position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+    LoadModel("images/Cylinder.json", defShader, MainScene, "Cylinder", defScale, position);
+
+    position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+    LoadModel("images/Plane.json", defShader, MainScene, "Plane", defScale, position);
+
+    position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+    LoadModel("images/Sphere.json", defShader, MainScene, "Sphere", defScale, position);
+
+    position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+    LoadModel("images/Cone.json", defShader, MainScene, "Cone", defScale, position);
+
+    position = [Math.random() * 6.0, Math.random() * 6.0, Math.random() * 6.0];
+    LoadModel("images/Cube.json", defShader, MainScene, "Cube", defScale, position);
 
     //Create Textures for meshes
     //new Texture("images/awesomeface.png", "texture2")

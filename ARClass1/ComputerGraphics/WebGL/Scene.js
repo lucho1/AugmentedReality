@@ -48,7 +48,7 @@ class Scene
         this.#m_MeshesDrawSize = this.#m_MeshesToDraw.length;
     }
 
-    AddObjectToScene = function(object, name)
+    AddObjectToScene = function(object, name, scale, pos)
     {
         if(this.#m_SceneObjects.get(name) == undefined)
         {
@@ -56,13 +56,8 @@ class Scene
             this.#m_MeshesToDraw.push(object);
             this.#m_MeshesDrawSize++;
 
-            if(name == "Teapot")
-            {
-                object.SetScale([0.05, 0.05, 0.05]);
-                object.SetPosition([25.0, 0.0, 0.0]);
-            }
-            else
-                object.SetPosition([0.0, 0.0, 0.0]);
+            object.SetScale(scale);
+            object.SetPosition(pos);
         }
         else
             console.log("Object was already in scene");

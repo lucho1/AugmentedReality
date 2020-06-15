@@ -1,4 +1,4 @@
-function LoadModel(file, shader, scene, name)
+function LoadModel(file, shader, scene, name, scale, pos)
 { 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function()
@@ -9,7 +9,7 @@ function LoadModel(file, shader, scene, name)
             {
                 var new_mesh = new Mesh();
                 new_mesh.SetupGeometry(JSON.parse(request.responseText), shader);
-                scene.AddObjectToScene(new_mesh, name);
+                scene.AddObjectToScene(new_mesh, name, scale, pos);
             }
             else
                 console.log("Failed to load " + request.status + " " + request.statusText);
